@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root{
+  --text-color:white;
+  --canvas-color:#171717;
+  --border-color:#3A3A3A;
+  --special-font:"Inter", serif;
+  --fade-background-color:#3a3a3aa7;
+  --fade-white:rgba(255, 255, 255, 0.259);
+  --toolbar-icon-width:38px;
+  --toolbar-icon-height:38px;
+}

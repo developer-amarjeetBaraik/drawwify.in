@@ -1,0 +1,42 @@
+.sidebarDiv{
+    position: absolute;
+    left: 20px;
+    top: 15%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.firstSpan, .secondSpan{
+    padding: 2px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+.sidebarButton{
+    position: relative;
+    width: var(--toolbar-icon-width);
+    height: var(--toolbar-icon-height);
+    color: var(--text-color);
+    background-color: transparent;
+    border: none;
+    align-content: center;
+    cursor: pointer;
+    &:hover{
+        background-color: var(--fade-background-color);
+        border-radius: 5px;
+    }
+    &:active{
+        background-color: var(--border-color);
+    }
+}
+.secondSpan{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.character{
+    position: absolute;
+    bottom: 3px;
+    right: 5px;
+    font-size: 8px;
+    color: var(--fade-white);
+}

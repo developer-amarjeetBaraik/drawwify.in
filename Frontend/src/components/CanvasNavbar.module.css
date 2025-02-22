@@ -1,0 +1,43 @@
+.canvasNavbarDiv {
+    padding: 0 20px;
+    width: 100%;
+    height: 50px;
+    border-bottom: 1px solid var(--border-color);
+    position: absolute;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-self: center;
+    background-color: var(--canvas-color);
+}
+
+.navbarLeft {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+}
+
+.navbarLeft span {
+    display: flex;
+    align-items: center;
+}
+
+#canvasTital {
+    font-family: var(--special-font);
+    font-size: 15px;
+    font-weight: 500;
+    color: white;
+    cursor: text;
+}
+
+.navbarRight {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: yellow; */
+}
+
+#canvasNavbarLogo {
+    width: 50px;
+}
