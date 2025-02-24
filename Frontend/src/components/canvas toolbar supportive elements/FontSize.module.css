@@ -1,0 +1,101 @@
+.fontSizeDiv{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.FontSizeIconDiv{
+    width: 70px;
+    height: 85%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    &:hover{
+        background-color: var(--fade-background-color);
+        border-radius: var(--border-radius);
+    }
+}
+.active{
+    border-radius: var(--border-radius);
+    background-color: var(--fade-background-color);
+}
+.FontSizeIconDiv button{
+    height: 100%;
+    color: white;
+    background-color: transparent;
+    border: none;
+    font-family: var(--special-font);
+    font-size: var(--toolbar-button-font-size);
+}
+/* option div */
+.FontSizeOptionDiv{
+    width: 150px;
+    position: absolute;
+    bottom: 130%;
+    left: 0px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.firstSection{
+    padding: 10px 5px;
+    border-bottom: 1px solid var(--border-color);
+}
+.secondSection{
+    padding: 10px 5px;
+}
+.optionSection{
+    width: 100%;
+    color: white;
+}
+.fontSizeRange{
+    margin: auto;
+    padding: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--border-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+.fontSizeRange button{
+    width: 20px;
+    height: 20px;
+    color: white;
+    background-color: transparent;
+    border: none;
+    border-radius: 2px;
+    &:hover{
+        background-color: var(--fade-white);
+    }
+}
+.fontSizeRange p{
+    font-size: 14px;
+    font-family: var(--special-font);
+}
+.fontSizeOption{
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.fontSizeOption .activeSize{
+    border-radius: var(--border-radius);
+    background-color: var(--selected-tab-blue-color);
+}
+.fontSizeOption button{
+    height: 25px;
+    color: white;
+    background-color: transparent;
+    border: none;
+    border-radius: var(--border-radius);
+    font-family: var(--special-font);
+    &:hover{
+        background-color: var(--fade-background-color);
+    }
+}

@@ -1,0 +1,23 @@
+.pencilDiv{
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pencilBtn{
+    width: 90%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    gap: 5px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    &:hover{
+        background-color: var(--fade-background-color);
+        border-radius: var(--border-radius);
+    }
+}

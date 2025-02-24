@@ -1,0 +1,22 @@
+.arrowBtnDiv {
+    padding: 0 5px;
+    width: 80px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.arrowBtn {
+    width: 23px;
+    height: 23px;
+    background-color: transparent;
+    border: none;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-color: var(--border-color);
+    }
+}

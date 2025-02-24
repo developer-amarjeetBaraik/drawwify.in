@@ -1,0 +1,91 @@
+.TypographyDiv{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.TypographyIconDiv{
+    width: 40px;
+    height: 85%;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    gap: 5px;
+    cursor: pointer;
+    &:hover{
+        background-color: var(--fade-background-color);
+        border-radius: var(--border-radius);
+    }
+}
+.active{
+    border-radius: var(--border-radius);
+    background-color: var(--fade-background-color);
+}
+.TypographyIconDiv button{
+    height: 100%;
+    color: white;
+    background-color: transparent;
+    border: none;
+    font-family: var(--special-font);
+    font-size: var(--toolbar-button-font-size);
+}
+/* option div */
+.alignOptionDiv{
+    width: 120px;
+    position: absolute;
+    bottom: 130%;
+    left: 0px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.firstSection{
+    padding: 10px 5px;
+}
+.secondSection{
+    padding: 10px 5px;
+    border-top: 1px solid var(--border-color);
+}
+.optionSection{
+    width: 100%;
+    color: white;
+}
+.textAlignOption{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.textAlignOption button{
+    text-align: center;
+    color: white;
+    background-color: transparent;
+    border: none;
+    border-radius: 2px;
+    &:hover{
+        background-color: var(--fade-white);
+    }
+}
+.fontStyleOption{
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.fontStyleOption .activeFont{
+    border-radius: var(--border-radius);
+    background-color: var(--selected-tab-blue-color);
+}
+.fontStyleOption button{
+    height: 25px;
+    color: white;
+    background-color: transparent;
+    border: none;
+    border-radius: var(--border-radius);
+    font-family: var(--special-font);
+    &:hover{
+        background-color: var(--fade-background-color);
+    }
+}

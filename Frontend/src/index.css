@@ -9,9 +9,12 @@
   --text-color:white;
   --canvas-color:#171717;
   --border-color:#3A3A3A;
+  --border-radius:5px;
   --special-font:"Inter", serif;
+  --selected-tab-blue-color:#68aaf2;
   --fade-background-color:#3a3a3aa7;
   --fade-white:rgba(255, 255, 255, 0.259);
   --toolbar-icon-width:38px;
   --toolbar-icon-height:38px;
+  --toolbar-button-font-size:13px;
 }
