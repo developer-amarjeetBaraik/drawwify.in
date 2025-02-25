@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import style from './CanvasToolbar.module.css'
 import Color from './canvas toolbar supportive elements/Color'
 import LineStyle from './canvas toolbar supportive elements/LineStyle'
@@ -13,36 +13,82 @@ import Eraser from './canvas toolbar supportive elements/Eraser'
 import PencilPointerThickness from './canvas toolbar supportive elements/PencilPointerThickness'
 
 const CanvasToolbar = () => {
+
+  const [selectedItem, setSelectedItem] = useState(null)
+
   return (
     <div className={style.toolbarDiv}>
       <div className={style.toolbarButtonHolderDiv}>
 
-      {/* for text block */}
-        <Color/>
-        <LineStyle/>
-        <TextOrCodeBtn/>
-        <FontSize/>
-        <Typography/>
-        <LineType/>
-        <ArrowSide/>
-        <DashLine/>
-        <Pencil/>
-        <Eraser/>
-        <PencilPointerThickness/>
-      {/* for shapes block */}
+        {/* for text block */}
+        {
+          (selectedItem === 'text') ? <>
+            <Color />
+            <TextOrCodeBtn />
+            <FontSize />
+            <Typography />
+          </> : null
+        }
+        <Color />
+        <LineStyle />
+        <TextOrCodeBtn />
+        <FontSize />
+        <Typography />
+        <LineType />
+        <ArrowSide />
+        <DashLine />
+        <Pencil />
+        <Eraser />
+        <PencilPointerThickness />
+        {/* for shapes block */}
+        {
+          (selectedItem === 'shape') ? <>
+            <Color />
+            <LineStyle />
+            <FontSize />
+            <Typography />
+          </> : null
+        }
 
+        {/* for arrow block */}
+        {
+          (selectedItem === 'arrow') ? <>
+            <Color />
+            <LineType />
+            <LineStyle />
+            <ArrowSide />
+            <DashLine />
+          </> : null
+        }
 
-      {/* for arrow block */}
+        {/* for line block */}
+        {
+          (selectedItem === 'line') ? <>
+            <Color />
+            <LineType />
+            <LineStyle />
+            <ArrowSide />
+            <DashLine />
+          </> : null
+        }
 
+        {/* for drow block */}
+        {
+          (selectedItem === 'drow') ? <>
+            <Color />
+            <PencilPointerThickness />
+          </> : null
+        }
 
-      {/* for line block */}
-
-
-      {/* for drow block */}
-
-
-      {/* for drow pancil block */}
-
+        {/* for drow pancil block */}
+        {
+          (selectedItem === 'drowPencil') ? <>
+            <Pencil />
+            <Eraser />
+            <Color />
+            <PencilPointerThickness />
+          </> : null
+        }
 
       </div>
     </div>

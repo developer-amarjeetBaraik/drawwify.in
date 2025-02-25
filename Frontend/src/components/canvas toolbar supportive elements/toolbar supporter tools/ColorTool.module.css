@@ -1,0 +1,57 @@
+/* .colorPropertyDivForShapes{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} */
+.colorPropertyTab {
+    padding: var(--tool-window-padding);
+    position: absolute;
+    width: var(--tool-window-width);
+    bottom: var(--tool-window-position-bottom);
+    left: var(--tool-window-position-left);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.colorPropertyTab input {
+    display: none;
+}
+
+.colorPropertyTab input[type='radio']:checked+label {
+    background-color: var(--selected-tab-blue-color);
+}
+
+.colorPropertyTab label {
+    min-width: var(--tool-btn-min-width);
+    min-height: var(--tool-btn-min-height);
+    border-radius: var(--tool-btn-border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+        background-color: var(--tool-btn-hover-background-color);
+    }
+}
+
+
+
+.toolbarColorIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+
+.colorSpaceIcon {
+    position: relative;
+    display: block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid white;
+    overflow: hidden;
+}

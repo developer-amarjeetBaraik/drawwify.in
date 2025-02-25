@@ -31,10 +31,10 @@
 }
 /* option div */
 .FontSizeOptionDiv{
-    width: 150px;
+    width: var(--tool-window-width);
     position: absolute;
-    bottom: 130%;
-    left: 0px;
+    bottom: var(--tool-window-position-bottom);
+    left: var(--tool-window-position-left);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     display: flex;
