@@ -1,3 +1,9 @@
-.firstCanvas{
-    background-color: var(--canvas-color);
+.canvasHolderDiv{
+    cursor: var(--cursor-default-arrow-icon)
 }
+.Canvas{
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: var(--canvas-color);
+} 

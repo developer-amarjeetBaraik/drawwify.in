@@ -1,4 +1,4 @@
-.sidebarDiv{
+.sidebarDiv {
     position: absolute;
     left: 20px;
     top: 15%;
@@ -6,12 +6,15 @@
     flex-direction: column;
     gap: 15px;
 }
-.firstSpan, .secondSpan{
+
+.firstSpan,
+.secondSpan {
     padding: 2px;
     border: 1px solid var(--border-color);
     border-radius: 5px;
 }
-.sidebarButton{
+
+.sidebarButton {
     position: relative;
     width: var(--toolbar-icon-width);
     height: var(--toolbar-icon-height);
@@ -20,20 +23,29 @@
     border: none;
     align-content: center;
     cursor: pointer;
-    &:hover{
+
+    &:hover {
         background-color: var(--fade-background-color);
         border-radius: 5px;
     }
-    &:active{
+
+    &:active {
         background-color: var(--border-color);
     }
 }
-.secondSpan{
+
+.activeBtn {
+    border-radius: var(--border-radius);
+    background-color: var(--fade-background-color);
+}
+
+.secondSpan {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
-.character{
+
+.character {
     position: absolute;
     bottom: 3px;
     right: 5px;

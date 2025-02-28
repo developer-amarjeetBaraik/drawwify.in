@@ -1,30 +1,39 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import style from './Typography.module.css'
+import styleFromToolbarCSS from '../CanvasToolbar.module.css'
+import { toolbarBtnContext } from '../../../store/CanvasToolbarStore'
 
 const Typography = () => {
-    // code to see if the fontSize tab is active of not
-    const [isTabActive, setIsTabActive] = useState(false)
+
+    const { selectedBtnName, changeSelectedBtnName } = useContext(toolbarBtnContext)
+
+    const [typographyBtnValue, setTypographyBtnValue] = useState('typographyTab')
 
     //code to see the which font size is selected
     const [fontSize, setFontSize] = useState('Rough')
 
 
-    const handleFontSizeOption = (e) => { 
+    const handleFontSizeOption = (e) => {
         setFontSize(e.target.innerHTML)
     }
 
     return (
-        <div onClick={() => setIsTabActive(!isTabActive)} className={style.TypographyDiv}>
-            <div className={`${style.TypographyIconDiv} ${isTabActive ? style.active : null}`}>
-                <button>
-                    T
-                </button>
-                <svg width="5" height="5" viewBox="0 0 5 3" xmlns="http://www.w3.org/2000/svg" className="PropertyBarDropdown_caret__5FfmK"><path d="M.206 1.117l1.805 1.692c.272.255.71.255.983 0l1.804-1.692C5.23.705 4.924 0 4.303 0H.701C.074 0-.233.705.206 1.117z" fill="white"></path></svg>
+        <div className={style.TypographyDiv}>
+            <div className={`${style.TypographyIconDiv}`}>
+                <div className={`${styleFromToolbarCSS.toolbarButton} ${typographyBtnValue === selectedBtnName?styleFromToolbarCSS.active:null}`}>
+                    {/* <input className={styleFromToolbarCSS.toolbarinput} type="radio" name="toolbarDropdownInput" id="typographyBtn" /> */}
+                    <button value={typographyBtnValue} onClick={()=>changeSelectedBtnName(typographyBtnValue)} className={styleFromToolbarCSS.toolbarBtn}>
+                        <span className={styleFromToolbarCSS.iconComponentSpan}>
+                            <p>T</p>
+                            <svg width="5" height="5" viewBox="0 0 5 3" xmlns="http://www.w3.org/2000/svg" className="PropertyBarDropdown_caret__5FfmK"><path d="M.206 1.117l1.805 1.692c.272.255.71.255.983 0l1.804-1.692C5.23.705 4.924 0 4.303 0H.701C.074 0-.233.705.206 1.117z" fill="white"></path></svg>
+                        </span>
+                    </button>
+                </div>
             </div>
 
             {/* conditional rendering applyed */}
             {
-                isTabActive ?
+                typographyBtnValue === selectedBtnName ?
                     <div className={style.alignOptionDiv}>
                         <div onClick={(e) => handleFontSizeOption(e)} className={`${style.fontStyleOption} ${style.optionSection} ${style.firstSection}`}>
                             <button className={`sizeBtn ${fontSize === "Rough" ? style.activeFont : null}`}>Rough</button>

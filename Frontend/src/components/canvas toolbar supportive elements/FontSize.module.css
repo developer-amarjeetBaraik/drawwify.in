@@ -4,25 +4,7 @@
     justify-content: center;
     align-items: center;
 }
-.FontSizeIconDiv{
-    width: 70px;
-    height: 85%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-    &:hover{
-        background-color: var(--fade-background-color);
-        border-radius: var(--border-radius);
-    }
-}
-.active{
-    border-radius: var(--border-radius);
-    background-color: var(--fade-background-color);
-}
-.FontSizeIconDiv button{
-    height: 100%;
+.FontSizeIconDiv span{
     color: white;
     background-color: transparent;
     border: none;

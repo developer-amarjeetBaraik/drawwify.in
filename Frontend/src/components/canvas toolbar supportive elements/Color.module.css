@@ -1,14 +1,9 @@
-.colorMainDiv{
+.colorMainDiv {
     position: relative;
 }
-.toolbarColorIcon{
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-}
-.colorSpaceIcon{
+
+
+.colorSpaceIcon {
     position: relative;
     display: block;
     width: 12px;
@@ -17,7 +12,8 @@
     border: 1px solid white;
     overflow: hidden;
 }
-.colorSpaceIcon i::before{
+
+.colorSpaceIcon i::before {
     content: "";
     position: absolute;
     top: 50%;

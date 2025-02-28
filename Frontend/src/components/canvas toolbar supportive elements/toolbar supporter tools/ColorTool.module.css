@@ -1,20 +1,37 @@
-/* .colorPropertyDivForShapes{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-} */
-.colorPropertyTab {
+.colorPropertyDivForShapes{
     padding: var(--tool-window-padding);
-    position: absolute;
     width: var(--tool-window-width);
+    position: absolute;
     bottom: var(--tool-window-position-bottom);
     left: var(--tool-window-position-left);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.colorPropertyTab {
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 5px;
+}
+.colorEffectTab{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+#pastelBtn{
+    background-color: gray;
+}
+#boldBtn{
+    background-color: white;
+}
+#outlineBtn{
+    border: 1px solid white;
 }
 
 .colorPropertyTab input {

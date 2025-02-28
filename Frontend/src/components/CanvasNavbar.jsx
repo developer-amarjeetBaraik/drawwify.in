@@ -1,5 +1,6 @@
 import React, { useContext} from 'react'
 import style from './CanvasNavbar.module.css'
+import styleFromWorkSpace from '../pages/Workspace.module.css'
 import { navbarContext } from '../../store/CanvasNavbarStore'
 
 //importing images
@@ -17,7 +18,7 @@ const CanvasNavbar = () => {
   }
 
   return (
-    <div className={style.canvasNavbarDiv}>
+    <div className={`${style.canvasNavbarDiv} ${styleFromWorkSpace.workspaceSupportingElement}`}>
       <div className={style.navbarLeft}>
         <img src={logo} alt="" id={style.canvasNavbarLogo} />
         <div id={style.canvasTital} suppressContentEditableWarning contentEditable onKeyDown={handleTitleKeyDown}>

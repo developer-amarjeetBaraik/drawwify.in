@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import style from './CanvasToolbar.module.css'
+import styleFromWorkSpace from '../pages/Workspace.module.css'
 import Color from './canvas toolbar supportive elements/Color'
 import LineStyle from './canvas toolbar supportive elements/LineStyle'
 import TextOrCodeBtn from './canvas toolbar supportive elements/TextOrCodeBtn'
@@ -11,13 +12,21 @@ import DashLine from './canvas toolbar supportive elements/DashLine'
 import Pencil from './canvas toolbar supportive elements/Pencil'
 import Eraser from './canvas toolbar supportive elements/Eraser'
 import PencilPointerThickness from './canvas toolbar supportive elements/PencilPointerThickness'
+import { sidebarSelectedBtnContext } from '../../store/CanvasSidebarStore'
 
 const CanvasToolbar = () => {
 
+  const { sidebarSelectedBtn } = useContext(sidebarSelectedBtnContext)
+
   const [selectedItem, setSelectedItem] = useState(null)
 
+  useEffect(()=>{
+    setSelectedItem(sidebarSelectedBtn)
+  },[sidebarSelectedBtn])
+
+
   return (
-    <div className={style.toolbarDiv}>
+    <div className={`${style.toolbarDiv} ${styleFromWorkSpace.workspaceSupportingElement}`}>
       <div className={style.toolbarButtonHolderDiv}>
 
         {/* for text block */}
@@ -29,20 +38,10 @@ const CanvasToolbar = () => {
             <Typography />
           </> : null
         }
-        <Color />
-        <LineStyle />
-        <TextOrCodeBtn />
-        <FontSize />
-        <Typography />
-        <LineType />
-        <ArrowSide />
-        <DashLine />
-        <Pencil />
-        <Eraser />
-        <PencilPointerThickness />
+
         {/* for shapes block */}
         {
-          (selectedItem === 'shape') ? <>
+          (selectedItem === 'shape' || selectedItem === 'square' || selectedItem === 'circle') ? <>
             <Color />
             <LineStyle />
             <FontSize />

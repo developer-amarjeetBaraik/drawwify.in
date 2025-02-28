@@ -8,7 +8,8 @@
     display: flex;
     justify-content: center;
 }
-.toolbarButtonHolderDiv{
+
+.toolbarButtonHolderDiv {
     padding: 2px;
     height: 100%;
     border: 1px solid var(--border-color);
@@ -17,17 +18,36 @@
     gap: 5px;
 }
 
-.toolbarButton{
-    width: var(--toolbar-icon-width);
-    height: var(--toolbar-icon-height);
+.iconComponentSpan{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.toolbarBtn {
+    padding: 0 10px;
+    min-width: var(--toolbar-icon-width);
+    min-height: var(--toolbar-icon-height);
     background-color: transparent;
     border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
     cursor: pointer;
-    &:hover{
+
+    &:hover {
         background-color: var(--fade-background-color);
         border-radius: 5px;
     }
-    &:active{
+
+    &:active {
         background-color: var(--border-color);
     }
+}
+
+.active {
+    border-radius: var(--border-radius);
+    background-color: var(--fade-background-color);
 }
