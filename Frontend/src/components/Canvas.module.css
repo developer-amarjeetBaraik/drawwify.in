@@ -5,5 +5,11 @@
     position: absolute;
     top: 0;
     left: 0;
-    background-color: var(--canvas-color);
 } 
+.supportingCanvas{
+    background-color: transparent;
+}
+
+.mainCanvas{
+    background-color: var(--canvas-color);
+}

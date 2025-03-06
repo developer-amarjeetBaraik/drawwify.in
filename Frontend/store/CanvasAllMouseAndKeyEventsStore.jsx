@@ -1,10 +1,17 @@
-import React from 'react'
+import React, { createContext } from 'react'
 
-const CanvasAllMouseAndKeyEventsStore = () => {
+export const mouseEventsOnCanvasContext = createContext({
+  selectElement: () => { },
+})
+
+const CanvasAllMouseAndKeyEventsStore = ({ children }) => {
+  const selectElement = ()=>{
+
+  }
   return (
-    <div>
-      
-    </div>
+    <mouseEventsOnCanvasContext.Provider value={{selectElement}}>
+      {children}
+    </mouseEventsOnCanvasContext.Provider>
   )
 }
 

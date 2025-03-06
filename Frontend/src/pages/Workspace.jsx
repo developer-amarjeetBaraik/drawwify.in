@@ -7,6 +7,9 @@ import CanvasSidebar from '../components/CanvasSidebar'
 import CanvasToolbar from '../components/CanvasToolbar'
 import CanvasToolbarStore from '../../store/CanvasToolbarStore'
 import CanvasSidebarStore from '../../store/CanvasSidebarStore'
+import CanvasDrowStore from '../../store/CanvasDrowStore'
+import ElementStore from '../../store/ElementStore'
+import CanvasAllMouseAndKeyEventsStore from '../../store/CanvasAllMouseAndKeyEventsStore'
 
 const Workspace = () => {
   document.title = "Workspace"
@@ -17,19 +20,30 @@ const Workspace = () => {
         <CanvasNavbar />
       </CanvasNavbarStore>
 
-      <CanvasToolbarStore>
-        <CanvasSidebarStore>
+      {/* prodive context of elements and all */}
+      <ElementStore>
+        {/* provide context of toolbar related things */}
+        <CanvasToolbarStore>
+          {/* provide context of sidebar related things */}
+          <CanvasSidebarStore>
 
-          {/* Canvas sidebar */}
-          <CanvasSidebar />
+            {/* Canvas sidebar */}
+            <CanvasSidebar />
 
-          {/* Canvas */}
-          <Canvas />
+            {/* provide context of mouse events on canvas */}
+            <CanvasAllMouseAndKeyEventsStore>
+              {/* provide context to draw on canvas */}
+              <CanvasDrowStore>
+                {/* Canvas */}
+                <Canvas />
+              </CanvasDrowStore>
+            </CanvasAllMouseAndKeyEventsStore>
 
-          {/* Canvas toolbar */}
-          <CanvasToolbar />
-        </CanvasSidebarStore>
-      </CanvasToolbarStore>
+            {/* Canvas toolbar */}
+            <CanvasToolbar />
+          </CanvasSidebarStore>
+        </CanvasToolbarStore>
+      </ElementStore>
     </>
   )
 }
