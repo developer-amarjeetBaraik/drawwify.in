@@ -1,16 +1,22 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 
 export const sidebarSelectedBtnContext = createContext({
     sidebarSelectedBtn: null,
-    setSidebarSelectedBtn: () => { },
+    changeSidebarSelectedBtn: () => { },
 })
 
 const CanvasSidebarStore = ({ children }) => {
 
-    const [sidebarSelectedBtn, setSidebarSelectedBtn] = useState('cursor')
+    const [sidebarSelectedBtn, setSidebarSelectedBtn] = useState('cursorBtn')
+
+    const changeSidebarSelectedBtn = (state) => {
+        setSidebarSelectedBtn(prevState => {
+            return state
+        })
+    }
 
     return (
-        <sidebarSelectedBtnContext.Provider value={{ sidebarSelectedBtn, setSidebarSelectedBtn }}>
+        <sidebarSelectedBtnContext.Provider value={{ sidebarSelectedBtn, changeSidebarSelectedBtn }}>
             {children}
         </sidebarSelectedBtnContext.Provider>
     )

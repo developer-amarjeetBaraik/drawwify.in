@@ -31,7 +31,7 @@ const CanvasToolbar = () => {
 
         {/* for text block */}
         {
-          (selectedItem === 'text') ? <>
+          (selectedItem === 'textBtn') ? <>
             <Color />
             <TextOrCodeBtn />
             <FontSize />
@@ -41,7 +41,7 @@ const CanvasToolbar = () => {
 
         {/* for shapes block */}
         {
-          (selectedItem === 'shape' || selectedItem === 'square' || selectedItem === 'circle') ? <>
+          (selectedItem === 'shape' || selectedItem === 'squareBtn' || selectedItem === 'circleBtn') ? <>
             <Color />
             <LineStyle />
             <FontSize />
@@ -51,7 +51,7 @@ const CanvasToolbar = () => {
 
         {/* for arrow block */}
         {
-          (selectedItem === 'arrow') ? <>
+          (selectedItem === 'arrowBtn' || selectedItem === 'arrowDraw') ? <>
             <Color />
             <LineType />
             <LineStyle />
@@ -62,7 +62,7 @@ const CanvasToolbar = () => {
 
         {/* for line block */}
         {
-          (selectedItem === 'line') ? <>
+          (selectedItem === 'lineBtn' || selectedItem === 'lineDraw') ? <>
             <Color />
             <LineType />
             <LineStyle />
@@ -73,7 +73,7 @@ const CanvasToolbar = () => {
 
         {/* for drow block */}
         {
-          (selectedItem === 'drow') ? <>
+          (selectedItem === 'drowBtn' || selectedItem === 'pencilDraw') ? <>
             <Color />
             <PencilPointerThickness />
           </> : null
@@ -81,7 +81,7 @@ const CanvasToolbar = () => {
 
         {/* for drow pancil block */}
         {
-          (selectedItem === 'drowPencil') ? <>
+          (selectedItem === 'drowPencilBtn') ? <>
             <Pencil />
             <Eraser />
             <Color />
