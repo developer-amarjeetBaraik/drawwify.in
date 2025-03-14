@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useRef } from 'react'
-import Pencil from '../src/components/canvas toolbar supportive elements/Pencil';
+import Pencil from '../src/components/canvas toolbar supportive elements/toolbar supporter tools/Pencil';
 
 export const drawCanvasContext = createContext({
   elements: [],
@@ -78,7 +78,9 @@ const CanvasDrowStore = ({ children }) => {
     if (selectedBtn === 'squareBtn') {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.strokeStyle = 'gray';
-      ctx.strokeRect(mouseX, mouseY, 200, 100)
+      ctx.beginPath()
+      ctx.roundRect(mouseX, mouseY, 200, 100,10)
+      ctx.stroke()
     } else if (selectedBtn === 'circleBtn') {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.beginPath()
@@ -89,7 +91,7 @@ const CanvasDrowStore = ({ children }) => {
   }
 
   //draw new item on canvas
-  const drawNewItemOnCanvas = (selectedItem, startX, startY, endX, endY, prevPencilX, prevPencilY) => {
+  const drawNewItemOnCanvas = (selectedItem, startX, startY, endX, endY, prevPencilX, prevPencilY, screenX, screenY) => {
     const canvas = topCanvasRef.current
     const ctx = canvas.getContext('2d')
     if (selectedItem === 'squareDraw') {
@@ -97,7 +99,9 @@ const CanvasDrowStore = ({ children }) => {
       ctx.strokeStyle = 'gray';
       const width = endX - startX
       const height = endY - startY
-      ctx.strokeRect(startX, startY, width, height)
+      ctx.beginPath()
+      ctx.roundRect(startX, startY, width, height, 10)
+      ctx.stroke()
     } else if (selectedItem === 'circleDraw') {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.beginPath()
@@ -148,6 +152,21 @@ const CanvasDrowStore = ({ children }) => {
       ctx.lineTo(endX, endY)
       ctx.stroke()
       ctx.fill()
+    } else if( selectedItem === 'textDraw'){
+      console.log("text")
+      console.log(`screenX: ${screenX} screenY: ${screenY}`)
+      console.log(`startX: ${startX} startY: ${startY}`)
+      const newP = document.createElement('input')
+      newP.type = 'text'
+      newP.autofocus = true
+      newP.id = 'textField'
+      newP.style.width = 'auto'
+      newP.style.backgroundColor = 'transparent'
+      newP.style.color = 'white'
+      newP.style.position = 'absolute'
+      newP.style.top = `${startY}px`
+      newP.style.left = `${startX}px`
+      document.getElementById('root').appendChild(newP)
     }
   }
 

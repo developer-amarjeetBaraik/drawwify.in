@@ -55,3 +55,7 @@
         background-color: var(--fade-background-color);
     }
 }
+.activeSize{
+    border-radius: var(--border-radius);
+    background-color: var(--selected-tab-blue-color);
+}

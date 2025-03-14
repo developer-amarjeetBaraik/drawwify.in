@@ -1,4 +1,4 @@
-.pencilDiv{
+.eraserDiv {
     position: relative;
     width: 40px;
     height: 40px;
@@ -6,17 +6,28 @@
     justify-content: center;
     align-items: center;
 }
-.pencilBtn{
+
+input {
+    display: none;
+}
+
+input[type=radio]:checked+label {
+    border-radius: var(--border-radius);
+    background-color: var(--border-color);
+}
+
+.eraserBtn {
     width: 90%;
     height: 90%;
     display: flex;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
     gap: 5px;
     background-color: transparent;
     border: none;
     cursor: pointer;
-    &:hover{
+
+    &:hover {
         background-color: var(--fade-background-color);
         border-radius: var(--border-radius);
     }

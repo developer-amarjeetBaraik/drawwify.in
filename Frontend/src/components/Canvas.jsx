@@ -64,7 +64,20 @@ const Canvas = () => {
       case "pencilDraw":
         canvasDiv.style.cursor = 'var(--cursor-draw-icon)'
         break;
+      case "eraserSizeX":
+        canvasDiv.style.cursor = 'var(--cursor-eraser-icon-size-X)'
+        break;
+      case "eraserSizeM":
+        canvasDiv.style.cursor = 'var(--cursor-eraser-icon-size-M)'
+        break;
+      case "eraserSizeL":
+        canvasDiv.style.cursor = 'var(--cursor-eraser-icon-size-L)'
+        break;
+      case "eraserSizeXL":
+        canvasDiv.style.cursor = 'var(--cursor-eraser-icon-size-XL)'
+        break;
       case "textBtn":
+      case "textDraw":
         canvasDiv.style.cursor = 'var(--cursor-plus-icon)'
         break;
     }
@@ -122,9 +135,17 @@ const Canvas = () => {
     let selectedItem = sidebarSelectedBtn;
     let startX = null;
     let startY = null;
+
+    let endX = null
+    let endY = null
     //this is for pencil draw tool
     let prevPencilX = null;
     let prevPencilY = null;
+
+    //for text draw
+    let screenX = null;
+    let screenY = null;
+
     let isDragging = false;
 
     const handleMouseDownOnCanvas = (event) => {
@@ -134,6 +155,10 @@ const Canvas = () => {
       //for pencil tool
       prevPencilX = startX;
       prevPencilY = startY;
+      //for text tool
+      screenX = event.screenX
+      screenY = event.screenY
+
       if (sidebarSelectedBtn === 'squareBtn' || sidebarSelectedBtn === 'squareDraw') {
         changeSidebarSelectedBtn('squareDraw')
         selectedItem = 'squareDraw'
@@ -149,15 +174,20 @@ const Canvas = () => {
       } else if (sidebarSelectedBtn === 'drawBtn') {
         changeSidebarSelectedBtn('pencilDraw')
         selectedItem = 'pencilDraw'
+      } else if (sidebarSelectedBtn === 'textBtn' || sidebarSelectedBtn === 'textDraw') {
+        changeSidebarSelectedBtn('textDraw')
+        selectedItem = 'textDraw'
+        //for text tool only
+        drawNewItemOnCanvas(selectedItem, startX, startY, endX, endY, prevPencilX, prevPencilY, screenX, screenY)
       }
     }
     const handleMouseDragOnCanvas = (event) => {
-      let endX = event.offsetX
-      let endY = event.offsetY
+      endX = event.offsetX
+      endY = event.offsetY
       if (isDragging && sidebarSelectedBtn === 'cursorBtn') {
         //draw the selection area if the sidebar button is cursorBtn
         drawSelectionArea(startX, startY, event.offsetX, event.offsetY)
-      } else if (isDragging) {
+      } else if (isDragging && selectedItem != 'textDraw') {
         drawNewItemOnCanvas(selectedItem, startX, startY, endX, endY, prevPencilX, prevPencilY)
         //for pencil tool
         prevPencilX = endX;

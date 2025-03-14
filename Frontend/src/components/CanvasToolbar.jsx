@@ -9,20 +9,13 @@ import Typography from './canvas toolbar supportive elements/Typography'
 import LineType from './canvas toolbar supportive elements/LineType'
 import ArrowSide from './canvas toolbar supportive elements/ArrowSide'
 import DashLine from './canvas toolbar supportive elements/DashLine'
-import Pencil from './canvas toolbar supportive elements/Pencil'
-import Eraser from './canvas toolbar supportive elements/Eraser'
-import PencilPointerThickness from './canvas toolbar supportive elements/PencilPointerThickness'
 import { sidebarSelectedBtnContext } from '../../store/CanvasSidebarStore'
+import PencilAndEraser from './canvas toolbar supportive elements/PencilAndEraser'
+import PencilPointerThickness from './canvas toolbar supportive elements/toolbar supporter tools/PencilPointerThickness'
 
 const CanvasToolbar = () => {
 
   const { sidebarSelectedBtn } = useContext(sidebarSelectedBtnContext)
-
-  const [selectedItem, setSelectedItem] = useState(null)
-
-  useEffect(()=>{
-    setSelectedItem(sidebarSelectedBtn)
-  },[sidebarSelectedBtn])
 
 
   return (
@@ -31,7 +24,7 @@ const CanvasToolbar = () => {
 
         {/* for text block */}
         {
-          (selectedItem === 'textBtn') ? <>
+          (sidebarSelectedBtn === 'textBtn') ? <>
             <Color />
             <TextOrCodeBtn />
             <FontSize />
@@ -41,7 +34,7 @@ const CanvasToolbar = () => {
 
         {/* for shapes block */}
         {
-          (selectedItem === 'shape' || selectedItem === 'squareBtn' || selectedItem === 'circleBtn') ? <>
+          (sidebarSelectedBtn === 'shape' || sidebarSelectedBtn === 'squareBtn' || sidebarSelectedBtn === 'squareDraw' || sidebarSelectedBtn === 'circleBtn') || sidebarSelectedBtn === 'circleDraw' ? <>
             <Color />
             <LineStyle />
             <FontSize />
@@ -51,7 +44,7 @@ const CanvasToolbar = () => {
 
         {/* for arrow block */}
         {
-          (selectedItem === 'arrowBtn' || selectedItem === 'arrowDraw') ? <>
+          (sidebarSelectedBtn === 'arrowBtn' || sidebarSelectedBtn === 'arrowDraw') ? <>
             <Color />
             <LineType />
             <LineStyle />
@@ -62,18 +55,17 @@ const CanvasToolbar = () => {
 
         {/* for line block */}
         {
-          (selectedItem === 'lineBtn' || selectedItem === 'lineDraw') ? <>
+          (sidebarSelectedBtn === 'lineBtn' || sidebarSelectedBtn === 'lineDraw') ? <>
             <Color />
             <LineType />
             <LineStyle />
-            <ArrowSide />
             <DashLine />
           </> : null
         }
 
         {/* for drow block */}
         {
-          (selectedItem === 'drowBtn' || selectedItem === 'pencilDraw') ? <>
+          (sidebarSelectedBtn === 'drawBtn') ? <>
             <Color />
             <PencilPointerThickness />
           </> : null
@@ -81,11 +73,8 @@ const CanvasToolbar = () => {
 
         {/* for drow pancil block */}
         {
-          (selectedItem === 'drowPencilBtn') ? <>
-            <Pencil />
-            <Eraser />
-            <Color />
-            <PencilPointerThickness />
+          (sidebarSelectedBtn === 'pencilDraw' || sidebarSelectedBtn === 'eraserDraw' || sidebarSelectedBtn === 'eraserSizeX' || sidebarSelectedBtn === 'eraserSizeM' || sidebarSelectedBtn === 'eraserSizeL' || sidebarSelectedBtn === 'eraserSizeXL') ? <>
+            <PencilAndEraser /> {/* With color and pencil and eraser pointer thickness component also */}
           </> : null
         }
 

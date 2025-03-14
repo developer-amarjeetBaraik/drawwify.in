@@ -1,15 +1,24 @@
 import React, { useContext, useState } from 'react'
 import style from './FontSize.module.css'
 import styleFromToolbarCSS from '../CanvasToolbar.module.css'
-import { toolbarBtnContext } from '../../../store/CanvasToolbarStore'
+import { toolbarBtnContext, toolbarComponentsValueContext } from '../../../store/CanvasToolbarStore'
 
 const FontSize = () => {
     const { selectedBtnName, changeSelectedBtnName } = useContext(toolbarBtnContext)
 
-    const [fontSizeBtnValue, setFontSizeBtnValue] = useState('fontSizeTab')
+    const fontSizeBtnValue = 'fontSizeTab'
+
+    //code to provide the font size to store to use it's value elsewhere
+    const {currFontSize, setCurrFontSize}=useContext(toolbarComponentsValueContext)
 
     //code to see the which font size is selected
     const [fontSize, setFontSize] = useState('Small')
+
+    //click event handler on buttons
+    const handleBtnClick = (event) => {
+        setCurrFontSize(event.target.value)
+        setFontSize(event.target.innerHTML)
+    }
 
     return (
         <div className={`${style.fontSizeDiv}`}>
@@ -27,21 +36,21 @@ const FontSize = () => {
             {
                 fontSizeBtnValue === selectedBtnName ? <>
                     <div className={style.FontSizeOptionDiv}>
-                        <div className={`${style.optionSection} ${style.firstSection}`}>
+                        {/* <div className={`${style.optionSection} ${style.firstSection}`}>
                             <div className={`${style.fontSizeRange} `}>
                                 <button>-</button>
                                 <p>{`${10}px`}</p>
                                 <button>+</button>
                             </div>
-                        </div>
-                        <div onClick={() => setIsTabActive(!isTabActive)} className={`${style.fontSizeOption} ${style.optionSection} ${style.secondSection}`}>
-                            <button className={`sizeBtn ${fontSize === "Small" ? style.activeSize : null}`}>Small</button>
-                            <button className={`sizeBtn ${fontSize === "Medium" ? style.activeSize : null}`}>Medium</button>
-                            <button className={`sizeBtn ${fontSize === "Large" ? style.activeSize : null}`}>Large</button>
-                            <button className={`sizeBtn ${fontSize === "X-Large" ? style.activeSize : null}`}>X-Large</button>
+                        </div> */}
+                        <div className={`${style.fontSizeOption} ${style.optionSection} ${style.secondSection}`}>
+                            <button onClick={handleBtnClick} value={'10px'} className={`sizeBtn ${fontSize === "Small" ? style.activeSize : null}`}>Small</button>
+                            <button onClick={handleBtnClick} value={'15px'} className={`sizeBtn ${fontSize === "Medium" ? style.activeSize : null}`}>Medium</button>
+                            <button onClick={handleBtnClick} value={'20px'} className={`sizeBtn ${fontSize === "Large" ? style.activeSize : null}`}>Large</button>
+                            <button onClick={handleBtnClick} value={'25px'} className={`sizeBtn ${fontSize === "X-Large" ? style.activeSize : null}`}>X-Large</button>
                         </div>
                     </div>
-                </>:null
+                </> : null
             }
 
 

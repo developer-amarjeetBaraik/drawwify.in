@@ -1,0 +1,31 @@
+.EraserPointerThicknessDiv{
+    padding: 0 10px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+.EraserPointerThicknessDiv input{
+    display: none;
+}
+.EraserPointerThicknessDiv input[type="radio"]:checked + label{
+    background-color: var(--border-color);
+    border-radius: var(--border-radius);
+}
+.EraserPointerThicknessBtn{
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    gap: 5px;
+    border: none;
+    cursor: pointer;
+    &:hover{
+        background-color: var(--fade-background-color);
+        border-radius: var(--border-radius);
+    }
+}

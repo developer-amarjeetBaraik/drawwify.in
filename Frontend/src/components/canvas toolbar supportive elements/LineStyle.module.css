@@ -5,11 +5,11 @@
     gap: 3px;
 }
 .LineStyleIcon{
-    position: relative;
+    /* position: relative;
     display: block;
     width: 12px;
     height: 12px;
     border-radius: 50%;
     border: 1px solid white;
-    overflow: hidden;
+    overflow: hidden; */
 }

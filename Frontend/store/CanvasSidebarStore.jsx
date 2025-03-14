@@ -15,6 +15,10 @@ const CanvasSidebarStore = ({ children }) => {
         })
     }
 
+    // useEffect(()=>{
+    //     console.log(sidebarSelectedBtn)
+    // },[sidebarSelectedBtn])
+
     return (
         <sidebarSelectedBtnContext.Provider value={{ sidebarSelectedBtn, changeSidebarSelectedBtn }}>
             {children}

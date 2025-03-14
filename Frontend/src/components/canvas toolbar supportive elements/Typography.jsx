@@ -1,17 +1,22 @@
 import React, { useContext, useState } from 'react'
 import style from './Typography.module.css'
 import styleFromToolbarCSS from '../CanvasToolbar.module.css'
-import { toolbarBtnContext } from '../../../store/CanvasToolbarStore'
+import { toolbarBtnContext, toolbarComponentsValueContext } from '../../../store/CanvasToolbarStore'
 
 const Typography = () => {
 
     const { selectedBtnName, changeSelectedBtnName } = useContext(toolbarBtnContext)
 
-    const [typographyBtnValue, setTypographyBtnValue] = useState('typographyTab')
+    //code to provide it's value to the store to use it some where
+    const { currFontStyle, setCurrFontStyle } = useContext(toolbarComponentsValueContext)
+    const handleBtnClick = (event) =>{
+        setCurrFontStyle(event.target.value)
+    }
+
+    const typographyBtnValue = 'typographyTab'
 
     //code to see the which font size is selected
     const [fontSize, setFontSize] = useState('Rough')
-
 
     const handleFontSizeOption = (e) => {
         setFontSize(e.target.innerHTML)
@@ -20,9 +25,9 @@ const Typography = () => {
     return (
         <div className={style.TypographyDiv}>
             <div className={`${style.TypographyIconDiv}`}>
-                <div className={`${styleFromToolbarCSS.toolbarButton} ${typographyBtnValue === selectedBtnName?styleFromToolbarCSS.active:null}`}>
+                <div className={`${styleFromToolbarCSS.toolbarButton} ${typographyBtnValue === selectedBtnName ? styleFromToolbarCSS.active : null}`}>
                     {/* <input className={styleFromToolbarCSS.toolbarinput} type="radio" name="toolbarDropdownInput" id="typographyBtn" /> */}
-                    <button value={typographyBtnValue} onClick={()=>changeSelectedBtnName(typographyBtnValue)} className={styleFromToolbarCSS.toolbarBtn}>
+                    <button value={typographyBtnValue} onClick={() => changeSelectedBtnName(typographyBtnValue)} className={styleFromToolbarCSS.toolbarBtn}>
                         <span className={styleFromToolbarCSS.iconComponentSpan}>
                             <p>T</p>
                             <svg width="5" height="5" viewBox="0 0 5 3" xmlns="http://www.w3.org/2000/svg" className="PropertyBarDropdown_caret__5FfmK"><path d="M.206 1.117l1.805 1.692c.272.255.71.255.983 0l1.804-1.692C5.23.705 4.924 0 4.303 0H.701C.074 0-.233.705.206 1.117z" fill="white"></path></svg>
@@ -36,9 +41,9 @@ const Typography = () => {
                 typographyBtnValue === selectedBtnName ?
                     <div className={style.alignOptionDiv}>
                         <div onClick={(e) => handleFontSizeOption(e)} className={`${style.fontStyleOption} ${style.optionSection} ${style.firstSection}`}>
-                            <button className={`sizeBtn ${fontSize === "Rough" ? style.activeFont : null}`}>Rough</button>
-                            <button className={`sizeBtn ${fontSize === "Clean" ? style.activeFont : null}`}>Clean</button>
-                            <button className={`sizeBtn ${fontSize === "Mono" ? style.activeFont : null}`}>Mono</button>
+                            <button onClick={handleBtnClick} value={'Sans-serif'} style={{fontFamily:'Sans-serif'}} className={`sizeBtn ${fontSize === "Rough" ? style.activeFont : null}`}>Rough</button>
+                            <button onClick={handleBtnClick} value={'Monospace'} style={{fontFamily:'Monospace'}} className={`sizeBtn ${fontSize === "Clean" ? style.activeFont : null}`}>Clean</button>
+                            <button onClick={handleBtnClick} value={'Cursive'} style={{fontFamily:'Cursive'}} className={`sizeBtn ${fontSize === "Mono" ? style.activeFont : null}`}>Mono</button>
                         </div>
                         <div className={`${style.optionSection} ${style.secondSection}`}>
                             <div className={`${style.textAlignOption} `}>

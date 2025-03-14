@@ -1,7 +1,7 @@
 .sidebarDiv {
-    position: absolute;
+    position: fixed;
     left: 20px;
-    top: 15%;
+    top: 80px;
     display: flex;
     flex-direction: column;
     gap: 15px;
