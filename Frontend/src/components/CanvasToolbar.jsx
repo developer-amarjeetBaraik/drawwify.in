@@ -19,12 +19,12 @@ const CanvasToolbar = () => {
 
 
   return (
-    <div className={`${style.toolbarDiv} ${styleFromWorkSpace.workspaceSupportingElement}`}>
+    <div id='toolBar' className={`${style.toolbarDiv} ${styleFromWorkSpace.workspaceSupportingElement}`}>
       <div className={style.toolbarButtonHolderDiv}>
 
         {/* for text block */}
         {
-          (sidebarSelectedBtn === 'textBtn') ? <>
+          (sidebarSelectedBtn === 'textBtn' || sidebarSelectedBtn === 'textDraw') ? <>
             <Color />
             <TextOrCodeBtn />
             <FontSize />

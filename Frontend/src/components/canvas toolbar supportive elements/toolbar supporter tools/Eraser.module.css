@@ -7,7 +7,7 @@
     align-items: center;
 }
 
-input {
+input[type=radio]{
     display: none;
 }
 

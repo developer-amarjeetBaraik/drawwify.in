@@ -21,7 +21,7 @@ export const toolbarComponentsValueContext = createContext({
     currPencilPointerSize: null,
     setCurrPencilPointerSize: () => { },
     currEraserPointerSize: null,
-    setCurrEraserPointerSize: () => { },
+    setCurrEraserPointerSize: () => { }, 
 })
 
 const CanvasToolbarStore = ({ children }) => {
@@ -30,7 +30,7 @@ const CanvasToolbarStore = ({ children }) => {
     //toolbar components current state
 
     //current color
-    const [currColor, setCurrColor] = useState(null)
+    const [currColor, setCurrColor] = useState('blue')
 
     //current font size
     const [currFontSize, setCurrFontSize] = useState('10px')
@@ -54,8 +54,8 @@ const CanvasToolbarStore = ({ children }) => {
     const [currEraserPointerSize, setCurrEraserPointerSize] = useState(null)
 
     useEffect(() => {
-        console.log(currEraserPointerSize)
-    }, [currEraserPointerSize])
+        console.log(currColor)
+    }, [currColor])
 
 
     const changeSelectedBtnName = (btnName) => {
