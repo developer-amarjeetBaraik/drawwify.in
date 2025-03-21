@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import style from './Canvas.module.css'
 import { sidebarSelectedBtnContext } from '../../store/CanvasSidebarStore';
 import { drawCanvasContext } from '../../store/CanvasDrowStore';
@@ -128,36 +128,35 @@ const Canvas = () => {
   }, [sidebarSelectedBtn])
 
   //code to draw and add item on canvas
+  const isDraggingRef = useRef(false)
+  const [startX, setStartX] = useState(null)
+  const [startY, setStartY] = useState(null)
+  //this is for pencil draw tool
+  const [prevPencilX,setPrevPencilX] = useState()
+  const [prevPencilY,setPrevPencilY] = useState()
   useEffect(() => {
     const canvas = document.getElementById('topCanvas')
     const ctx = canvas.getContext('2d')
 
     let selectedItem = sidebarSelectedBtn;
-    let startX = null;
-    let startY = null;
 
     let endX = null
     let endY = null
-    //this is for pencil draw tool
-    let prevPencilX = null;
-    let prevPencilY = null;
-
+ 
     //for text draw
     let screenX = null;
     let screenY = null;
 
-    let isDragging = false;
-
     const handleMouseDownOnCanvas = (event) => {
-      isDragging = true;
-      startX = event.offsetX;
-      startY = event.offsetY;
+      isDraggingRef.current = true;
+      setStartX(event.offsetX);
+      setStartY(event.offsetY);
       //for pencil tool
-      prevPencilX = startX;
-      prevPencilY = startY;
+      setPrevPencilX(event.offsetX);
+      setPrevPencilY(event.offsetY);
       //for text tool
-      screenX = event.screenX
-      screenY = event.screenY
+      screenX = event.offsetX
+      screenY = event.offsetY
 
       if (sidebarSelectedBtn === 'squareBtn' || sidebarSelectedBtn === 'squareDraw') {
         changeSidebarSelectedBtn('squareDraw')
@@ -174,8 +173,9 @@ const Canvas = () => {
       } else if (sidebarSelectedBtn === 'drawBtn') {
         changeSidebarSelectedBtn('pencilDraw')
         selectedItem = 'pencilDraw'
-      } else if (sidebarSelectedBtn === 'textBtn' || sidebarSelectedBtn === 'textDraw') {
-        changeSidebarSelectedBtn('textDraw')
+      } else if (sidebarSelectedBtn === 'textBtn') {
+        console.log(sidebarSelectedBtn)
+        // changeSidebarSelectedBtn('textDraw')
         selectedItem = 'textDraw'
         //for text tool only
         drawNewItemOnCanvas(selectedItem, startX, startY, endX, endY, prevPencilX, prevPencilY, screenX, screenY)
@@ -184,24 +184,27 @@ const Canvas = () => {
     const handleMouseDragOnCanvas = (event) => {
       endX = event.offsetX
       endY = event.offsetY
-      if (isDragging && sidebarSelectedBtn === 'cursorBtn') {
+      if (isDraggingRef.current && sidebarSelectedBtn === 'cursorBtn') {
         //draw the selection area if the sidebar button is cursorBtn
         drawSelectionArea(startX, startY, event.offsetX, event.offsetY)
-      } else if (isDragging && selectedItem != 'textDraw') {
+      } else if (isDraggingRef.current && selectedItem != 'textDraw') {
         drawNewItemOnCanvas(selectedItem, startX, startY, endX, endY, prevPencilX, prevPencilY)
         //for pencil tool
-        prevPencilX = endX;
-        prevPencilY = endY;
+        setPrevPencilX(endX);
+        setPrevPencilY(endY);
       }
     }
     const handleMouseUpOnCanvas = (event) => {
-      isDragging = false;
+      isDraggingRef.current = false;
+      setStartX(prev => null)
+      setStartY(prev => null)
       const endX = event.offsetX;
       const endY = event.offsetY;
       if (sidebarSelectedBtn === 'cursorBtn') {
         ctx.clearRect(0, 0, topCanvasRef.current.width, topCanvasRef.current.height)
       }
       addItemOnCanvas(sidebarSelectedBtn, startX, startY, endX, endY)
+      changeSidebarSelectedBtn('cursorBtn')
     }
 
     canvas.addEventListener('mousedown', handleMouseDownOnCanvas)
@@ -210,10 +213,10 @@ const Canvas = () => {
 
     return () => {
       canvas.removeEventListener('mousedown', handleMouseDownOnCanvas)
-      canvas.addEventListener('mousemove', handleMouseDragOnCanvas)
-      canvas.addEventListener('mouseup', handleMouseUpOnCanvas)
+      canvas.removeEventListener('mousemove', handleMouseDragOnCanvas)
+      canvas.removeEventListener('mouseup', handleMouseUpOnCanvas)
     }
-  }, [sidebarSelectedBtn])
+  }, [sidebarSelectedBtn, startX, startY, prevPencilX, prevPencilY])
 
 
   return (

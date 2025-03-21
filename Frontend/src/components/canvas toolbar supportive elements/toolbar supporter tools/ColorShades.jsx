@@ -1,35 +1,102 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import style from './ColorShades.module.css'
 import { toolbarComponentsValueContext } from '../../../../store/CanvasToolbarStore'
 
 const ColorShades = ({ selectedColorTab }) => {
-  const {currColor,setCurrColor}=useContext(toolbarComponentsValueContext)
+  const { currPastelColor, setCurrPatelColor, currBoldColor, setCurrBoldColor, currOutlineColor, setCurrOutlineColor } = useContext(toolbarComponentsValueContext)
 
-  const handleClickOnBtn = (event) => {
-    setCurrColor(getComputedStyle(document.documentElement).getPropertyValue(event.target.value))
+  const changePastelColor = (event) => {
+    setCurrPatelColor(getComputedStyle(document.documentElement).getPropertyValue(event.target.value))
+    setCurrBoldColor(null)
   }
-  
+  const changeBoldColor = (event) => {
+    setCurrBoldColor(getComputedStyle(document.documentElement).getPropertyValue(event.target.value))
+    setCurrPatelColor(null)
+  }
+  const changeOutlineColor = (event) => {
+    setCurrOutlineColor(getComputedStyle(document.documentElement).getPropertyValue(event.target.value))
+  }
+
 
   return (
-    <div className={style.colorShadesDiv}>
-      <button value={`${selectedColorTab === 'pastel' ? '--color-tool-first-transparent' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? '--color-tool-first-solid' : selectedColorTab === 'outline' ? '--first-outline-color' : null}`} onClick={handleClickOnBtn} className={style.colorBtn} style={{ border: `1px solid var(--first-outline-color)`, backgroundColor: `${selectedColorTab === 'pastel' ? 'var(--color-tool-first-transparent)' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? 'var(--color-tool-first-solid)' : selectedColorTab === 'outline' ? 'var(--canvas-color)' : null}` }}></button>
+    <>
+      {
+        // conditional rendering applied
 
-      <button value={`${selectedColorTab === 'pastel' ? '--color-tool-second-transparent' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? '--color-tool-second-solid' : selectedColorTab === 'outline' ? '--color-tool-second-solid' : null}`} onClick={handleClickOnBtn} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-second-solid)`, backgroundColor: `${selectedColorTab === 'pastel' ? 'var(--color-tool-second-transparent)' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? 'var(--color-tool-second-solid)' : selectedColorTab === 'outline' ? 'var(--canvas-color)' : null}` }}></button>
+        (selectedColorTab === 'Pastel') ? <>
 
-      <button value={`${selectedColorTab === 'pastel' ? '--color-tool-third-transparent' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? '--color-tool-third-solid' : selectedColorTab === 'outline' ? '--color-tool-third-solid' : null}`} onClick={handleClickOnBtn} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-third-solid)`, backgroundColor: `${selectedColorTab === 'pastel' ? 'var(--color-tool-third-transparent)' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? 'var(--color-tool-third-solid)' : selectedColorTab === 'outline' ? 'var(--canvas-color)' : null}` }}></button>
+          {/* for pastel */}
 
-      <button value={`${selectedColorTab === 'pastel' ? '--color-tool-fourth-transparent' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? '--color-tool-fourth-solid' : selectedColorTab === 'outline' ? '--color-tool-fourth-solid' : null}`} onClick={handleClickOnBtn} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-fourth-solid)`, backgroundColor: `${selectedColorTab === 'pastel' ? 'var(--color-tool-fourth-transparent)' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? 'var(--color-tool-fourth-solid)' : selectedColorTab === 'outline' ? 'var(--canvas-color)' : null}` }}></button>
+          <div className={style.colorShadesDiv}>
+            <button value={'--color-tool-first-transparent'} onClick={changePastelColor} className={style.colorBtn} style={{ border: `1px solid var(--first-outline-color)`, backgroundColor: 'var(--color-tool-first-transparent)' }}></button>
 
-      <button value={`${selectedColorTab === 'pastel' ? '--color-tool-fifth-transparent' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? '--color-tool-fifth-solid' : selectedColorTab === 'outline' ? '--color-tool-fifth-solid' : null}`} onClick={handleClickOnBtn} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-fifth-solid)`, backgroundColor: `${selectedColorTab === 'pastel' ? 'var(--color-tool-fifth-transparent)' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? 'var(--color-tool-fifth-solid)' : selectedColorTab === 'outline' ? 'var(--canvas-color)' : null}` }}></button>
+            <button value={'--color-tool-second-transparent'} onClick={changePastelColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-second-solid)`, backgroundColor: 'var(--color-tool-second-transparent)' }}></button>
 
-      <button value={`${selectedColorTab === 'pastel' ? '--color-tool-sixth-transparent' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? '--color-tool-sixth-solid' : selectedColorTab === 'outline' ? '--color-tool-sixth-solid' : null}`} onClick={handleClickOnBtn} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-sixth-solid)`, backgroundColor: `${selectedColorTab === 'pastel' ? 'var(--color-tool-sixth-transparent)' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? 'var(--color-tool-sixth-solid)' : selectedColorTab === 'outline' ? 'var(--canvas-color)' : null}` }}></button>
+            <button value={'--color-tool-third-transparent'} onClick={changePastelColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-third-solid)`, backgroundColor: 'var(--color-tool-third-transparent)' }}></button>
 
-      <button value={`${selectedColorTab === 'pastel' ? '--color-tool-seventh-transparent' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? '--color-tool-seventh-solid' : selectedColorTab === 'outline' ? '--color-tool-seventh-solid' : null}`} onClick={handleClickOnBtn} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-seventh-solid)`, backgroundColor: `${selectedColorTab === 'pastel' ? 'var(--color-tool-seventh-transparent)' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? 'var(--color-tool-seventh-solid)' : selectedColorTab === 'outline' ? 'var(--canvas-color)' : null}` }}></button>
+            <button value={'--color-tool-fourth-transparent'} onClick={changePastelColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-fourth-solid)`, backgroundColor: 'var(--color-tool-fourth-transparent)' }}></button>
 
-      <button value={`${selectedColorTab === 'pastel' ? '--color-tool-eighth-transparent' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? '--color-tool-eighth-solid' : selectedColorTab === 'outline' ? '--color-tool-eighth-solid' : null}`} onClick={handleClickOnBtn} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-eighth-solid)`, backgroundColor: `${selectedColorTab === 'pastel' ? 'var(--color-tool-eighth-transparent)' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? 'var(--color-tool-eighth-solid)' : selectedColorTab === 'outline' ? 'var(--canvas-color)' : null}` }}></button>
+            <button value={'--color-tool-fifth-transparent'} onClick={changePastelColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-fifth-solid)`, backgroundColor: 'var(--color-tool-fifth-transparent)' }}></button>
 
-      <button value={`${selectedColorTab === 'pastel' ? '--color-tool-ninth-transparent' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? '--color-tool-ninth-solid' : selectedColorTab === 'outline' ? '--color-tool-nineth-solid' : null}`} onClick={handleClickOnBtn} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-ninth-solid)`, backgroundColor: `${selectedColorTab === 'pastel' ? 'var(--color-tool-ninth-transparent)' : (selectedColorTab === 'bold' || selectedColorTab === 'others') ? 'var(--color-tool-ninth-solid)' : selectedColorTab === 'outline' ? 'var(--canvas-color)' : null}` }}></button>
-    </div>
+            <button value={'--color-tool-sixth-transparent'} onClick={changePastelColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-sixth-solid)`, backgroundColor: 'var(--color-tool-sixth-transparent)' }}></button>
+
+            <button value={'--color-tool-seventh-transparent'} onClick={changePastelColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-seventh-solid)`, backgroundColor: 'var(--color-tool-seventh-transparent)' }}></button>
+
+            <button value={'--color-tool-eighth-transparent'} onClick={changePastelColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-eighth-solid)`, backgroundColor: 'var(--color-tool-eighth-transparent)' }}></button>
+
+            <button value={'--color-tool-ninth-transparent'} onClick={changePastelColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-ninth-solid)`, backgroundColor: 'var(--color-tool-ninth-transparent)' }}></button>
+          </div>
+
+        </> : (selectedColorTab === 'Bold') ? <>
+
+          {/* for bold */}
+
+          <div className={style.colorShadesDiv}>
+            <button value={'--color-tool-first-solid'} onClick={changeBoldColor} className={style.colorBtn} style={{ border: `1px solid var(--first-outline-color)`, backgroundColor: 'var(--color-tool-first-solid)' }}></button>
+
+            <button value={'--color-tool-second-solid'} onClick={changeBoldColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-second-solid)`, backgroundColor: 'var(--color-tool-second-solid)' }}></button>
+
+            <button value={'--color-tool-third-solid'} onClick={changeBoldColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-third-solid)`, backgroundColor: 'var(--color-tool-third-solid)' }}></button>
+
+            <button value={'--color-tool-fourth-solid'} onClick={changeBoldColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-fourth-solid)`, backgroundColor: 'var(--color-tool-fourth-solid)' }}></button>
+
+            <button value={'--color-tool-fifth-solid'} onClick={changeBoldColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-fifth-solid)`, backgroundColor: 'var(--color-tool-fifth-solid)' }}></button>
+
+            <button value={'--color-tool-sixth-solid'} onClick={changeBoldColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-sixth-solid)`, backgroundColor: 'var(--color-tool-sixth-solid)' }}></button>
+
+            <button value={'--color-tool-seventh-solid'} onClick={changeBoldColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-seventh-solid)`, backgroundColor: 'var(--color-tool-seventh-solid)' }}></button>
+
+            <button value={'--color-tool-eighth-solid'} onClick={changeBoldColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-eighth-solid)`, backgroundColor: 'var(--color-tool-eighth-solid)' }}></button>
+
+            <button value={'--color-tool-ninth-solid'} onClick={changeBoldColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-ninth-solid)`, backgroundColor: 'var(--color-tool-ninth-solid)' }}></button>
+          </div>
+
+        </> : (selectedColorTab === 'Outline') ? <>
+
+          {/* for outline */}
+
+          <div className={style.colorShadesDiv}>
+            <button value={'--color-tool-first-solid'} onClick={changeOutlineColor} className={style.colorBtn} style={{ border: `1px solid var(--first-outline-color)`, backgroundColor: 'var(--canvas-color)' }}></button>
+
+            <button value={'--color-tool-second-solid'} onClick={changeOutlineColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-second-solid)`, backgroundColor: 'var(--canvas-color)' }}></button>
+
+            <button value={'--color-tool-third-solid'} onClick={changeOutlineColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-third-solid)`, backgroundColor: 'var(--canvas-color)' }}></button>
+
+            <button value={'--color-tool-fourth-solid'} onClick={changeOutlineColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-fourth-solid)`, backgroundColor: 'var(--canvas-color)' }}></button>
+
+            <button value={'--color-tool-fifth-solid'} onClick={changeOutlineColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-fifth-solid)`, backgroundColor: 'var(--canvas-color)' }}></button>
+
+            <button value={'--color-tool-sixth-solid'} onClick={changeOutlineColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-sixth-solid)`, backgroundColor: 'var(--canvas-color)' }}></button>
+
+            <button value={'--color-tool-seventh-solid'} onClick={changeOutlineColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-seventh-solid)`, backgroundColor: 'var(--canvas-color)' }}></button>
+
+            <button value={'--color-tool-eighth-solid'} onClick={changeOutlineColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-eighth-solid)`, backgroundColor: 'var(--canvas-color)' }}></button>
+
+            <button value={'--color-tool-ninth-solid'} onClick={changeOutlineColor} className={style.colorBtn} style={{ border: `1px solid var(--color-tool-ninth-solid)`, backgroundColor: 'var(--canvas-color)' }}></button>
+          </div>
+        </> : null
+      }
+    </>
   )
 }
 

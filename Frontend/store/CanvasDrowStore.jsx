@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
+import React, { createContext, use, useContext, useEffect, useRef, useState } from 'react'
 import Pencil from '../src/components/canvas toolbar supportive elements/toolbar supporter tools/Pencil';
 import { toolbarComponentsValueContext } from './CanvasToolbarStore';
 
@@ -22,11 +22,34 @@ const CanvasDrowStore = ({ children }) => {
   const drawNewItemOnCanvasRef = useRef(() => { })
   const [drawNewItemOnCanvas, setDrawNewItemOnCanvas] = useState(() => () => { })
 
-  const { currColor, currFontSize, currLineType, currFontStyle, currArrowHead, currDashLine, currEraserPointerSize, currPencilPointerSize } = useContext(toolbarComponentsValueContext)
+  const { currPastelColor, currBoldColor, currOutlineColor, currFontSize, currLineType, currFontStyle, currArrowHead, currDashLine, currEraserPointerSize, currPencilPointerSize } = useContext(toolbarComponentsValueContext)
 
-  useEffect(()=>{
-    console.log(`this is from testing ${currColor}`)
-  },[currColor])
+  //storing the state into refs so that it's latest state can be used inside the function
+  const currPastelColorRef = useRef(currPastelColor)
+  const currBoldColorRef = useRef(currBoldColor)
+  const currOutlineColorRef = useRef(currOutlineColor)
+  const currFontSizeRef = useRef(currFontSize)
+  const currLineTypeRef = useRef(currLineType)
+  const currFontStyleRef = useRef(currFontStyle)
+  const currArrowHeadRef = useRef(currArrowHead)
+  const currDashLineRef = useRef(currDashLine)
+  const currEraserPointerSizeRef = useRef(currEraserPointerSize)
+  const currPencilPointerSizeRef = useRef(currPencilPointerSize)
+
+  //updateing the state on change into refs so that it's latest state can be used inside the function
+  useEffect(() => {
+    currPastelColorRef.current = currPastelColor
+    currBoldColorRef.current = currBoldColor
+    currOutlineColorRef.current = currOutlineColor
+    currFontSizeRef.current = currFontSize
+    currLineTypeRef.current = currLineType
+    currFontStyleRef.current = currFontStyle
+    currArrowHeadRef.current = currArrowHead
+    currDashLineRef.current = currDashLine
+    currEraserPointerSizeRef.current = currEraserPointerSize
+    currPencilPointerSizeRef.current = currPencilPointerSize
+  }, [currPastelColor, currBoldColor, currOutlineColor, currFontSize, currLineType, currFontStyle, currArrowHead, currDashLine, currEraserPointerSize, currPencilPointerSize])
+
 
   const elements = [{ type: "rectangle", x: 100, y: 100, width: 120, height: 80, color: "blue" }, { type: "circle", x: 600, y: 200, radius: 40, color: "red" }, { type: "text", x: 300, y: 150, text: "Hello Canvas!", font: "20px Arial", color: "yellow" }, { type: "arrow", startX: 400, startY: 200, endX: 500, endY: 300, color: "white", lineWidth: 3 }];
 
@@ -106,33 +129,36 @@ const CanvasDrowStore = ({ children }) => {
 
   useEffect(() => {
     //add text on canvas
-    const addTextOnCanvas = (startX, startY, event) => {
+    const addTextOnCanvas = (screenX, screenY, event) => {
       console.log(event.target.innerHTML)
       const canvas = topCanvasRef.current;
       const ctx = canvas.getContext('2d')
       let font = event.target.innerHTML
       ctx.fillStyle = 'white'
       ctx.font = "20px Arial"
-      ctx.fillText(font, startX, startY)
+      ctx.fillText(font, screenX, screenY)
     }
 
-    console.log(`this is from inside of fn ${currColor}`)
     //draw new item on canvas
     drawNewItemOnCanvasRef.current = (selectedItem, startX, startY, endX, endY, prevPencilX, prevPencilY, screenX, screenY) => {
       const canvas = topCanvasRef.current
       const ctx = canvas.getContext('2d')
       if (selectedItem === 'squareDraw') {
         ctx.clearRect(0, 0, canvas.width, canvas.height)
-        ctx.fillStyle = currColor;
+        ctx.fillStyle = currPastelColorRef.current || currBoldColorRef.current;
+        ctx.strokeStyle = currOutlineColorRef.current;
         const width = endX - startX
         const height = endY - startY
         ctx.beginPath()
-        ctx.fillRect(startX, startY, width, height, 10)
+        ctx.roundRect(startX, startY, width, height, 10)
+        if (currPastelColorRef.current || currBoldColorRef.current) {
+          ctx.fill()
+        }
         ctx.stroke()
       } else if (selectedItem === 'circleDraw') {
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         ctx.beginPath()
-        ctx.strokeStyle = currColor
+        ctx.strokeStyle = currPastelColor
         let centerX = (startX + endX) / 2
         let centerY = (startY + endY) / 2
         let radius = Math.sqrt(Math.pow(startX - centerX, 2) + Math.pow(startY - centerY, 2))
@@ -194,20 +220,21 @@ const CanvasDrowStore = ({ children }) => {
         newP.style.backgroundColor = 'tranceparent'
         newP.style.color = 'white'
         newP.style.position = 'absolute'
-        newP.style.top = `${startY}px`
-        newP.style.left = `${startX}px`
+        newP.style.top = `${screenY}px`
+        newP.style.left = `${screenX}px`
         newP.addEventListener('keydown', (event) => {
           if (event.key === 'Enter') {
             event.preventDefault()
-            addTextOnCanvas(startX, startY, event)
+            addTextOnCanvas(screenX, screenY, event)
             newP.remove()
           }
         })
         document.getElementById('root').appendChild(newP)
       }
     }
+
     setDrawNewItemOnCanvas(() => drawNewItemOnCanvasRef.current)
-  }, [currColor])
+  }, [currPastelColor])
 
 
 
