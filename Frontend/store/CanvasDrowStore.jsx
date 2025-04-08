@@ -4,23 +4,35 @@ import { toolbarComponentsValueContext } from './CanvasToolbarStore';
 
 export const drawCanvasContext = createContext({
   elements: [],
+  selectedElements: [],
   mainCanvasRef: null,
   middleCanvasRef: null,
   topCanvasRef: null,
   drawExistingElementsOnDrawingCanvas: () => { },
-  drawOnExecutionCanvas: () => { },
   drawSelectionArea: () => { },
   drawSelectedElementIndicator: () => { },
+  drawSelectedElementsWhenIndicatorsReRendering: () => { },
   drawNewItemOnCanvas: () => { },
   addItemOnCanvas: () => { },
+  addSelectedElementsInElementsArray: () => { },
 })
 
 
 const CanvasDrowStore = ({ children }) => {
 
-  //function ref to use inside and outside of useEffect hook
-  const drawNewItemOnCanvasRef = useRef(() => { })
-  const [drawNewItemOnCanvas, setDrawNewItemOnCanvas] = useState(() => () => { })
+  const topCanvasRef = useRef(null)
+  const middleCanvasRef = useRef(null)
+  const mainCanvasRef = useRef(null)
+
+
+  // Section-1 storing the state of all elements present on canvas
+
+  //elements to draw on middle canvas
+  const [elements, setElements] = useState([])
+  const [selectedElements, setSelectedElements] = useState([])
+
+
+  // Section-2 maneging the states of toolbar values
 
   const { currPastelColor, currBoldColor, currOutlineColor, currFontSize, currLineType, currFontStyle, currArrowHead, currDashLine, currEraserPointerSize, currPencilPointerSize } = useContext(toolbarComponentsValueContext)
 
@@ -50,46 +62,46 @@ const CanvasDrowStore = ({ children }) => {
     currPencilPointerSizeRef.current = currPencilPointerSize
   }, [currPastelColor, currBoldColor, currOutlineColor, currFontSize, currLineType, currFontStyle, currArrowHead, currDashLine, currEraserPointerSize, currPencilPointerSize])
 
+  // Section-Managing the functions referance soo that functions can be call from every where
 
-  const elements = [{ type: "rectangle", x: 100, y: 100, width: 120, height: 80, color: "blue" }, { type: "circle", x: 600, y: 200, radius: 40, color: "red" }, { type: "text", x: 300, y: 150, text: "Hello Canvas!", font: "20px Arial", color: "yellow" }, { type: "arrow", startX: 400, startY: 200, endX: 500, endY: 300, color: "white", lineWidth: 3 }];
+  // this function add selectedElement on elements array
+  const addSelectedElementsInElementsArrayRef = useRef(() => { })
+  const [addSelectedElementsInElementsArray, setAddSelectedElementsInElementsArray] = useState(() => () => { })
 
-  const topCanvasRef = useRef(null)
-  const middleCanvasRef = useRef(null)
-  const mainCanvasRef = useRef(null)
+  // this function draw elements present in elements array on it's state change
+  const drawExistingElementsOnDrawingCanvasRef = useRef(() => { })
+  const [drawExistingElementsOnDrawingCanvas, setDrawExistingElementsOnDrawingCanvas] = useState(() => () => { })
 
-  //code to draw on executino canvas besically draw a selected item
-  const drawOnExecutionCanvas = () => {
+  // this function draw selected elements present in selectedElements array on it's state change
+  const drawSelectedElementOnCanvasRef = useRef(() => { })
+  const [drawSelectedElementOnCanvas, setDrawSelectedElementOnCanvas] = useState(() => () => { })
 
-  }
+  // this function draw the new element on canvas to simulate the adding of new element but just draw don't add on selectedElements or elements array
+  const drawNewItemOnCanvasRef = useRef(() => { })
+  const [drawNewItemOnCanvas, setDrawNewItemOnCanvas] = useState(() => () => { })
 
-  //code to draw existing elements on drawing canvas
-  const drawExistingElementsOnDrawingCanvas = () => {
-    const ctx = middleCanvasRef.current.getContext('2d')
-    elements.forEach(item => {
-      if (item.type === 'rectangle') {
-        ctx.fillStyle = item.color;
-        ctx.fillRect(item.x, item.y, item.width, item.height)
+  // this function add new element on seclectedElements array or elements array
+  const updateElementsAndSelctedElementsRef = useRef(() => { })
+  const [updateElementsAndSelctedElements, setUpdateElementsAndSelctedElements] = useState(() => () => { })
+
+  // Section-Additional helper functions
+
+  // this function add selectedElemets into elements array
+  useEffect(() => {
+    let newArrayToPushInElements = []
+    addSelectedElementsInElementsArrayRef.current = () => {
+      if (selectedElements.length > 0) {
+        newArrayToPushInElements = [...elements, ...selectedElements]
+        setElements(newArrayToPushInElements)
+        setSelectedElements([])
       }
-      else if (item.type === 'circle') {
-        ctx.arc(item.x, item.y, item.radius, 0, 2 * Math.PI)
-        ctx.fillStyle = item.color;
-        ctx.fill()
-        ctx.stroke()
-      }
-      else if (item.type === 'text') {
-        ctx.fillStyle = item.color;
-        ctx.font = item.font;
-        ctx.fillText(item.text, item.x, item.y)
-      }
-      else if (item.type === 'arrow') {
-        ctx.beginPath()
-        ctx.moveTo(item.startX, item.startY)
-        ctx.lineTo(item.endX, item.endY)
-        ctx.strokeStyle = item.color
-        ctx.stroke()
-      }
-    })
-  }
+    }
+    addSelectedElementsInElementsArrayRef.current()
+    setAddSelectedElementsInElementsArray(() => addSelectedElementsInElementsArrayRef.current)
+  }, [])
+
+
+  //  Section-3 funtions to draw the additional features on canvas
 
   //code to draw a selection area on canvas
   const drawSelectionArea = (startPointX, startPointY, newMouseX, newMouseY) => {
@@ -125,8 +137,82 @@ const CanvasDrowStore = ({ children }) => {
     }
   }
 
-  //function wraped in useEffect to access the latest state from toolbar 
+  // this function draw selected element on canvas when the selcted element indicators are re-rendering the canvas
+  const drawSelectedElementsWhenIndicatorsReRendering = () => {
+    console.log(selectedElements)
+  }
 
+
+  // Section-4 functions to draw elements on canvas from elements[] and selectedElements[] array only
+
+  // function-4.1
+
+  // this function will draw what ever objectes are present in elements[] array on elements state change
+  useEffect(() => {
+    drawExistingElementsOnDrawingCanvasRef.current = () => {
+      const ctx = middleCanvasRef.current.getContext('2d')
+      elements.forEach(item => {
+        if (item.type === 'rectangle') {
+          ctx.fillStyle = item.color;
+          ctx.strokeStyle = item.strokeColor;
+          ctx.beginPath();
+          ctx.roundRect(item.x, item.y, item.width, item.height, 10)
+          ctx.stroke()
+          if (item.color !== null) {
+            console.log(`color applied ${item.color}`)
+            ctx.fill()
+          }
+        }
+        else if (item.type === 'circle') {
+          ctx.arc(item.x, item.y, item.radius, 0, 2 * Math.PI)
+          ctx.fillStyle = item.color;
+          ctx.fill()
+          ctx.stroke()
+        }
+        else if (item.type === 'text') {
+          ctx.fillStyle = item.color;
+          ctx.font = item.font;
+          ctx.fillText(item.text, item.x, item.y)
+        }
+        else if (item.type === 'arrow') {
+          ctx.beginPath()
+          ctx.moveTo(item.startX, item.startY)
+          ctx.lineTo(item.endX, item.endY)
+          ctx.strokeStyle = item.color
+          ctx.stroke()
+        }
+      })
+    }
+    drawExistingElementsOnDrawingCanvasRef.current()
+    setDrawExistingElementsOnDrawingCanvas(() => drawExistingElementsOnDrawingCanvasRef.current)
+  }, [elements])
+
+  // function-4.2
+
+  // this function will draw what ever objectes are presnt in selectedElements[] array on selectedElements state change
+  useEffect(() => {
+    drawSelectedElementOnCanvasRef.current = () => {
+      console.log(selectedElements)
+      if (selectedElements.length > 0) {
+        selectedElements.forEach(item => {
+          console.log('will draw selected element here')
+        })
+      } else {
+        console.log('no selected element')
+      }
+    }
+    drawSelectedElementOnCanvasRef.current()
+    setDrawSelectedElementOnCanvas(() => drawSelectedElementOnCanvasRef.current)
+  }, [selectedElements])
+
+
+
+
+  // Section-5 simulate to draw new item on canvas
+
+  // function-5.1
+
+  //this function simulate (draw) new element on top canvas
   useEffect(() => {
     //add text on canvas
     const addTextOnCanvas = (screenX, screenY, event) => {
@@ -152,6 +238,7 @@ const CanvasDrowStore = ({ children }) => {
         ctx.beginPath()
         ctx.roundRect(startX, startY, width, height, 10)
         if (currPastelColorRef.current || currBoldColorRef.current) {
+          console.log('entered')
           ctx.fill()
         }
         ctx.stroke()
@@ -223,6 +310,7 @@ const CanvasDrowStore = ({ children }) => {
         newP.style.top = `${screenY}px`
         newP.style.left = `${screenX}px`
         newP.addEventListener('keydown', (event) => {
+          console.log(event)
           if (event.key === 'Enter') {
             event.preventDefault()
             addTextOnCanvas(screenX, screenY, event)
@@ -230,22 +318,64 @@ const CanvasDrowStore = ({ children }) => {
           }
         })
         document.getElementById('root').appendChild(newP)
+        console.log(newP.innerHTML.length)
+        if (newP.innerHTML.length > 0) {
+          console.log('entered')
+          document.body.addEventListener('click', () => {
+            console.log('text printed')
+          })
+        }
       }
     }
 
     setDrawNewItemOnCanvas(() => drawNewItemOnCanvasRef.current)
-  }, [currPastelColor])
+  }, [currPastelColor, currBoldColor, currOutlineColor])
 
+  // Section-6 updating the elements[] and selectedElements[] array by adding or deleting elements
 
+  // function-6.1
 
-  //code to add item on canvas
-  const addItemOnCanvas = (selectedBtn, mouseX, mouseY, endX, endY) => {
+  // this function manage the elements[] and selectedElements[] array
+  useEffect(() => {
+    let newElementsArray = null
+    let oldSelectedElementsArray = [...selectedElements]
+    updateElementsAndSelctedElementsRef.current = (newElement) => {
+      if (oldSelectedElementsArray.length > 0) {
+        newElementsArray = [...elements, ...selectedElements]
+        setElements(newElementsArray)
+      }
+      let newSelctedElementsArray = []
+      newSelctedElementsArray.push(newElement)
+      setSelectedElements((prev) => newSelctedElementsArray)
+    }
+    setUpdateElementsAndSelctedElements(() => updateElementsAndSelctedElementsRef.current)
+  }, [])
 
+  // function-6.2
+
+  // this function get the new item data and pass the item object to updateElementsAndSelctedElements function
+  const addItemOnCanvas = (selectedItem, type, startX, startY, endX, endY, prevPencilX, prevPencilY) => {
+    let newElement = null
+    // { type: "rectangle", x: 100, y: 100, width: 120, height: 80, color: "blue" }
+    if (type === 'rectangle') {
+      const width = endX - startX
+      const height = endY - startY
+      newElement = {
+        type: type,
+        x: startX,
+        y: startY,
+        width: width,
+        height: height,
+        color: currBoldColorRef.current,
+        strokeColor: currOutlineColorRef.current,
+      }
+      updateElementsAndSelctedElements(newElement)
+    }
   }
 
   return (
     <>
-      <drawCanvasContext.Provider value={{ elements, topCanvasRef, middleCanvasRef, mainCanvasRef, drawExistingElementsOnDrawingCanvas, drawOnExecutionCanvas, drawSelectionArea, drawSelectedElementIndicator, drawNewItemOnCanvas, addItemOnCanvas }}>
+      <drawCanvasContext.Provider value={{ elements, selectedElements, topCanvasRef, middleCanvasRef, mainCanvasRef, drawExistingElementsOnDrawingCanvas,  drawSelectionArea, drawSelectedElementIndicator, drawSelectedElementsWhenIndicatorsReRendering, drawNewItemOnCanvas, addItemOnCanvas, addSelectedElementsInElementsArray }}>
         {children}
       </drawCanvasContext.Provider>
     </>
