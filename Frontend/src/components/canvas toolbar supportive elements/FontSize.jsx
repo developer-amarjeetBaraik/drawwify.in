@@ -44,10 +44,10 @@ const FontSize = () => {
                             </div>
                         </div> */}
                         <div className={`${style.fontSizeOption} ${style.optionSection} ${style.secondSection}`}>
-                            <button onClick={handleBtnClick} value={'10px'} className={`sizeBtn ${fontSize === "Small" ? style.activeSize : null}`}>Small</button>
-                            <button onClick={handleBtnClick} value={'15px'} className={`sizeBtn ${fontSize === "Medium" ? style.activeSize : null}`}>Medium</button>
-                            <button onClick={handleBtnClick} value={'20px'} className={`sizeBtn ${fontSize === "Large" ? style.activeSize : null}`}>Large</button>
-                            <button onClick={handleBtnClick} value={'25px'} className={`sizeBtn ${fontSize === "X-Large" ? style.activeSize : null}`}>X-Large</button>
+                            <button onClick={handleBtnClick} value={10} className={`sizeBtn ${fontSize === "Small" ? style.activeSize : null}`}>Small</button>
+                            <button onClick={handleBtnClick} value={15} className={`sizeBtn ${fontSize === "Medium" ? style.activeSize : null}`}>Medium</button>
+                            <button onClick={handleBtnClick} value={20} className={`sizeBtn ${fontSize === "Large" ? style.activeSize : null}`}>Large</button>
+                            <button onClick={handleBtnClick} value={25} className={`sizeBtn ${fontSize === "X-Large" ? style.activeSize : null}`}>X-Large</button>
                         </div>
                     </div>
                 </> : null

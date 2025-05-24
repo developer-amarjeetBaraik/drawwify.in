@@ -1,20 +1,25 @@
 import React, { createContext, use, useContext, useEffect, useRef, useState } from 'react'
-import Pencil from '../src/components/canvas toolbar supportive elements/toolbar supporter tools/Pencil';
+// import Pencil from '../src/components/canvas toolbar supportive mainElements/toolbar supporter tools/Pencil';
 import { toolbarComponentsValueContext } from './CanvasToolbarStore';
+import { sidebarSelectedBtnContext } from './CanvasSidebarStore';
 
 export const drawCanvasContext = createContext({
-  elements: [],
+  mainElements: [],
+  setMainElements: () => { },
   selectedElements: [],
-  mainCanvasRef: null,
+  setSelectedElements: () => { },
+  bottomCanvasRef: null,
   middleCanvasRef: null,
   topCanvasRef: null,
-  drawExistingElementsOnDrawingCanvas: () => { },
+  canFireStoreItemFromSelectedElementsToMainElements: false,
+  isTextEditing: false,
+  storeItemFromSelectedElementsToMainElements: () => { },
   drawSelectionArea: () => { },
   drawSelectedElementIndicator: () => { },
-  drawSelectedElementsWhenIndicatorsReRendering: () => { },
-  drawNewItemOnCanvas: () => { },
-  addItemOnCanvas: () => { },
-  addSelectedElementsInElementsArray: () => { },
+  drawNewItem: () => { },
+  addNewItemInArr: () => { },
+  drawMainElementsArr: () => { },
+  drawSelectedElementsArr: () => { },
 })
 
 
@@ -22,19 +27,58 @@ const CanvasDrowStore = ({ children }) => {
 
   const topCanvasRef = useRef(null)
   const middleCanvasRef = useRef(null)
-  const mainCanvasRef = useRef(null)
+  const bottomCanvasRef = useRef(null)
 
+  // { elementType: 'arrow', startX: 250, startY: 300, endX: 600, endY: 150, strokeColor: null }, { elementType: 'line', startX: 280, startY: 170, endX: 480, endY: 159, strokeColor: 'blue' },
 
-  // Section-1 storing the state of all elements present on canvas
+  // Section- storing the state of all mainElements present on canvas
 
-  //elements to draw on middle canvas
-  const [elements, setElements] = useState([])
+  //mainElements array
+  const [mainElements, setMainElements] = useState([{ elementType: 'rectangle', x: 100, y: 200, width: 500, height: 200, strokeColor: 'blue', fillColor: 'yellow', strokeWidth: 1.5, borderRadius: 10 }, { elementType: 'circle', x: 800, y: 190, radius: 90, strokeColor: 'pink', strokeWidth: 3 }, { elementType: 'text', text: 'Amarjeet', fontSize: 20, fontStyle: 'Arial', screenX: 1100, screenY: 250, textColor: 'white' }, { elementType: 'text', text: 'Amarjeet', fontSize: 20, fontStyle: 'Arial', screenX: 950, screenY: 160, textColor: 'white' }])
+
+  //selectedElements array
   const [selectedElements, setSelectedElements] = useState([])
 
 
-  // Section-2 maneging the states of toolbar values
+  // Section- Managing referance of functions
 
-  const { currPastelColor, currBoldColor, currOutlineColor, currFontSize, currLineType, currFontStyle, currArrowHead, currDashLine, currEraserPointerSize, currPencilPointerSize } = useContext(toolbarComponentsValueContext)
+  // this function draw elements present in elements array on it's state change
+  const drawMainElementsArrRef = useRef(() => { })
+  const [drawMainElementsArr, setDrawMainElementsArr] = useState(() => () => { })
+
+  // this function draw selected elements present in selectedElements array on it's state change
+  const drawSelectedElementsArrRef = useRef(() => { })
+  const [drawSelectedElementsArr, setDrawSelectedElementsArr] = useState(() => () => { })
+
+  // this function draw the new element on canvas to simulate the adding of new element but just draw don't add on selectedElements or elements array
+  const drawNewItemRef = useRef(() => { })
+  const [drawNewItem, setDrawNewItem] = useState(() => () => { })
+
+  // this function add new element on seclectedElements array or elements array
+  const updateElementsAndSelctedElementsRef = useRef(() => { })
+  const [updateElementsAndSelctedElements, setUpdateElementsAndSelctedElements] = useState(() => () => { })
+
+  // section- helper states
+
+  // this state help to know if the text in editing or not on canvas right now
+  const [isTextEditing, setIsTextEditing] = useState(false)
+
+  // re-sizing points state
+  const [resizingPoints, setResizingPoints] = useState([{ tL: { tLx: null, tLy: null }, tR: { tRx: null, tRy: null }, bL: { bLx: null, bLy: null }, bR: { bRx: null, bRy: null } }])
+
+  const tLRef = useRef({ x: null, y: null })
+  const tRRef = useRef({ x: null, y: null })
+  const bLRef = useRef({ x: null, y: null })
+  const bRRef = useRef({ x: null, y: null })
+  const lStart = useRef({ x: null, y: null })
+  const lEnd = useRef({ x: null, y: null })
+
+
+  // Section- maneging the states of toolbar values
+
+  const { sidebarSelectedBtn, changeSidebarSelectedBtn } = useContext(sidebarSelectedBtnContext)
+
+  const { currPastelColor, currBoldColor, currOutlineColor, currFontSize, currLineType, currFontStyle, currArrowHeadDir, currDashLine, currEraserPointerSize, currPencilPointerSize } = useContext(toolbarComponentsValueContext)
 
   //storing the state into refs so that it's latest state can be used inside the function
   const currPastelColorRef = useRef(currPastelColor)
@@ -43,7 +87,7 @@ const CanvasDrowStore = ({ children }) => {
   const currFontSizeRef = useRef(currFontSize)
   const currLineTypeRef = useRef(currLineType)
   const currFontStyleRef = useRef(currFontStyle)
-  const currArrowHeadRef = useRef(currArrowHead)
+  const currArrowHeadDirRef = useRef(currArrowHeadDir)
   const currDashLineRef = useRef(currDashLine)
   const currEraserPointerSizeRef = useRef(currEraserPointerSize)
   const currPencilPointerSizeRef = useRef(currPencilPointerSize)
@@ -56,326 +100,502 @@ const CanvasDrowStore = ({ children }) => {
     currFontSizeRef.current = currFontSize
     currLineTypeRef.current = currLineType
     currFontStyleRef.current = currFontStyle
-    currArrowHeadRef.current = currArrowHead
+    currArrowHeadDirRef.current = currArrowHeadDir
     currDashLineRef.current = currDashLine
     currEraserPointerSizeRef.current = currEraserPointerSize
     currPencilPointerSizeRef.current = currPencilPointerSize
-  }, [currPastelColor, currBoldColor, currOutlineColor, currFontSize, currLineType, currFontStyle, currArrowHead, currDashLine, currEraserPointerSize, currPencilPointerSize])
+  }, [currPastelColor, currBoldColor, currOutlineColor, currFontSize, currLineType, currFontStyle, currArrowHeadDir, currDashLine, currEraserPointerSize, currPencilPointerSize])
 
-  // Section-Managing the functions referance soo that functions can be call from every where
+  // Section- Helping functions
 
-  // this function add selectedElement on elements array
-  const addSelectedElementsInElementsArrayRef = useRef(() => { })
-  const [addSelectedElementsInElementsArray, setAddSelectedElementsInElementsArray] = useState(() => () => { })
-
-  // this function draw elements present in elements array on it's state change
-  const drawExistingElementsOnDrawingCanvasRef = useRef(() => { })
-  const [drawExistingElementsOnDrawingCanvas, setDrawExistingElementsOnDrawingCanvas] = useState(() => () => { })
-
-  // this function draw selected elements present in selectedElements array on it's state change
-  const drawSelectedElementOnCanvasRef = useRef(() => { })
-  const [drawSelectedElementOnCanvas, setDrawSelectedElementOnCanvas] = useState(() => () => { })
-
-  // this function draw the new element on canvas to simulate the adding of new element but just draw don't add on selectedElements or elements array
-  const drawNewItemOnCanvasRef = useRef(() => { })
-  const [drawNewItemOnCanvas, setDrawNewItemOnCanvas] = useState(() => () => { })
-
-  // this function add new element on seclectedElements array or elements array
-  const updateElementsAndSelctedElementsRef = useRef(() => { })
-  const [updateElementsAndSelctedElements, setUpdateElementsAndSelctedElements] = useState(() => () => { })
-
-  // Section-Additional helper functions
-
-  // this function add selectedElemets into elements array
-  useEffect(() => {
-    let newArrayToPushInElements = []
-    addSelectedElementsInElementsArrayRef.current = () => {
-      if (selectedElements.length > 0) {
-        newArrayToPushInElements = [...elements, ...selectedElements]
-        setElements(newArrayToPushInElements)
-        setSelectedElements([])
-      }
-    }
-    addSelectedElementsInElementsArrayRef.current()
-    setAddSelectedElementsInElementsArray(() => addSelectedElementsInElementsArrayRef.current)
-  }, [])
-
-
-  //  Section-3 funtions to draw the additional features on canvas
-
-  //code to draw a selection area on canvas
-  const drawSelectionArea = (startPointX, startPointY, newMouseX, newMouseY) => {
+  // Fn - draw selection boundry
+  const drawSelectionBoundary = ({ type, sX, sY, sWidth, sHeight, startX, startY, endX, endY }) => {
     const ctx = topCanvasRef.current.getContext('2d')
-    ctx.clearRect(0, 0, topCanvasRef.current.width, topCanvasRef.current.height)
-    // ctx.globalAlpha = 0.5;
-    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--select-area-fill-color');
-    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--select-area-border-color');
-    ctx.lineWidth = 0.5;
-    ctx.stroke()
-    const rectWidth = newMouseX - startPointX
-    const rectHeight = newMouseY - startPointY
-    ctx.strokeRect(startPointX, startPointY, rectWidth, rectHeight);
-    ctx.fillRect(startPointX, startPointY, rectWidth, rectHeight);
+    let radius = 5;
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--select-area-border-color')
+    ctx.lineWidth = getComputedStyle(document.documentElement).getPropertyValue('--selected-item-border-width')
+
+    const drawResizingPoint = (x, y) => {
+      ctx.beginPath()
+      ctx.arc(x, y, radius, 0, 2 * Math.PI)
+      ctx.fill()
+      ctx.stroke()
+    }
+
+    const drawBoundaryLine = (x1, y1, x2, y2) => {
+      ctx.beginPath()
+      ctx.moveTo(x1, y1)
+      ctx.lineTo(x2, y2)
+      ctx.stroke()
+    }
+
+    switch (type) {
+      case 'rectangle':
+      case 'circle':
+      case 'text':
+        tLRef.current = { x: sX, y: sY }
+        tRRef.current = { x: sX + sWidth, y: sY }
+        bLRef.current = { x: sX, y: sY + sHeight }
+        bRRef.current = { x: sX + sWidth, y: sY + sHeight }
+
+        // top line
+        drawBoundaryLine(tLRef.current.x, tLRef.current.y, tRRef.current.x, tRRef.current.y)
+        // right line
+        drawBoundaryLine(tRRef.current.x, tRRef.current.y, bRRef.current.x, bRRef.current.y)
+        // bottom line
+        drawBoundaryLine(bRRef.current.x, bRRef.current.y, bLRef.current.x, bLRef.current.y)
+        // left line
+        drawBoundaryLine(bLRef.current.x, bLRef.current.y, tLRef.current.x, tLRef.current.y)
+
+        // top left point
+        drawResizingPoint(tLRef.current.x, tLRef.current.y)
+
+        // top right point
+        drawResizingPoint(tRRef.current.x, tRRef.current.y)
+
+        // bottom left point
+        drawResizingPoint(bLRef.current.x, bLRef.current.y)
+
+        // bottm right point
+        drawResizingPoint(bRRef.current.x, bRRef.current.y)
+
+      case 'arrow':
+      case 'line':
+
+        lStart.current.x = startX
+        lStart.current.y = startY
+        lEnd.current.x = endX
+        lEnd.current.y = endY
+
+        ctx.beginPath()
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--select-area-border-color')
+        ctx.moveTo(lStart.current.x, lStart.current.y);  // Move to starting point
+        ctx.lineTo(lEnd.current.x, lEnd.current.y);      // Draw line to this point
+        ctx.stroke()
+        ctx.fill()
+
+        ctx.fillStyle = 'white'
+        ctx.beginPath()
+        ctx.arc(lStart.current.x, lStart.current.y, radius, 0, 2 * Math.PI)
+        ctx.stroke()
+        ctx.fill()
+
+        ctx.beginPath()
+        ctx.arc(lEnd.current.x, lEnd.current.y, radius, 0, 2 * Math.PI)
+        ctx.stroke()
+        ctx.fill()
+
+      case 'pencil':
+
+
+      default:
+        break;
+    }
   }
 
-  //code to draw selected element indicator with cursor
+  // Fn- Draw rectangle
+  const drawRectangle = ({ isSelectedItem = false, isNewElement = false, canvasRef, x, y, width, height, strokeColor, fillColor = 'transparent', strokeWidth = 1.5, borderRadius = 0, }) => {
+    const ctx = canvasRef.current.getContext('2d')
+    ctx.save();
+
+    if (isNewElement) {
+      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+    }
+
+    if (isSelectedItem && canvasRef === topCanvasRef) {
+      const boundaryDiff = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--selected-item-boundry-difference'))
+      let sX = x - boundaryDiff
+      let sY = y - boundaryDiff
+      let sWidth = width + boundaryDiff * 2
+      let sHeight = height + boundaryDiff * 2
+      drawSelectionBoundary({ type: 'rectangle', sX, sY, sHeight, sWidth })
+    }
+
+
+    ctx.beginPath()
+
+    ctx.fillStyle = fillColor === null ? 'transparent' : fillColor
+    ctx.strokeStyle = strokeColor
+    ctx.lineWidth = strokeWidth
+
+    if (borderRadius > 0) {
+      ctx.roundRect(x, y, width, height, 10)
+    } else {
+      ctx.strokeRect(x, y, width, height);
+      ctx.fillRect(x, y, width, height);
+    }
+
+    if (fillColor != 'transparent') {
+      ctx.fill()
+    }
+
+    ctx.stroke()
+  }
+
+  // Fn- Draw circle
+  const drawCircle = ({ isSelectedItem = false, isNewElement = false, canvasRef, x, y, radius, strokeColor = 'gray', fillColor = 'transparent', strokeWidth = 1.5 }) => {
+    const ctx = canvasRef.current.getContext('2d')
+    if (isNewElement) {
+      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+    }
+    if (isSelectedItem && canvasRef === topCanvasRef) {
+      const boundaryDiff = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--selected-item-boundry-difference'))
+      let sX = x - radius - boundaryDiff
+      let sY = y - radius - boundaryDiff
+      let sWidth = radius * 2 + boundaryDiff * 2
+      let sHeight = radius * 2 + boundaryDiff * 2
+      drawSelectionBoundary({ type: 'circle', sX, sY, sWidth, sHeight })
+    }
+
+    ctx.beginPath()
+    ctx.fillStyle = fillColor
+    ctx.strokeStyle = strokeColor
+    ctx.strokeWidth = strokeWidth
+    ctx.arc(x, y, radius, 0, 2 * Math.PI)
+    if (fillColor != 'transparent') {
+      ctx.fill()
+    }
+    ctx.stroke()
+  }
+
+  // Fn- Draw arrow
+  const drawArrow = ({ isSelectedItem = false, isNewElement = false, canvasRef, startX, startY, endX, endY, arrowSize = 10, strokeWidth = 1.5, strokeColor = 'gray' }) => {
+    const ctx = canvasRef.current.getContext('2d')
+    const angle = Math.atan2(endY - startY, endX - startX);
+
+    if (isNewElement) {
+      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+    }
+
+    ctx.beginPath()
+    ctx.strokeStyle = strokeColor
+    ctx.lineWidth = strokeWidth
+    ctx.moveTo(startX, startY);  // Move to starting point
+    ctx.lineTo(endX, endY);      // Draw line to this point
+    ctx.stroke()
+
+    // Calculate arrowhead points (rotated ±30 degrees)
+    const arrowX1 = endX - arrowSize * Math.cos(angle - Math.PI / 6);
+    const arrowY1 = endY - arrowSize * Math.sin(angle - Math.PI / 6);
+    const arrowX2 = endX - arrowSize * Math.cos(angle + Math.PI / 6);
+    const arrowY2 = endY - arrowSize * Math.sin(angle + Math.PI / 6);
+
+    // Draw arrowhead
+    ctx.beginPath();
+    ctx.moveTo(endX, endY);
+    ctx.lineTo(arrowX1, arrowY1);
+    ctx.moveTo(endX, endY);
+    ctx.lineTo(arrowX2, arrowY2);
+    ctx.stroke();
+
+    if (isSelectedItem && canvasRef === topCanvasRef) {
+      drawSelectionBoundary({ type: 'arrow', startX, startY, endX, endY })
+    }
+
+  }
+
+  // Fn- Draw line
+  const drawLine = ({ isSelectedItem = false, isNewElement = false, canvasRef, startX, startY, endX, endY, strokeWidth = 1.5, strokeColor }) => {
+    const ctx = canvasRef.current.getContext('2d')
+    if (isNewElement) {
+      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+    }
+
+    ctx.beginPath()
+    ctx.strokeStyle = strokeColor
+    ctx.lineWidth = strokeWidth
+    ctx.moveTo(startX, startY);  // Move to starting point
+    ctx.lineTo(endX, endY);      // Draw line to this point
+    ctx.stroke()
+
+    if (isSelectedItem && canvasRef === topCanvasRef) {
+
+      drawSelectionBoundary({ type: 'line', startX, startY, endX, endY })
+
+    }
+  }
+
+  // Fn- Draw pencil
+  const pencilDraw = ({ isSelectedItem = false, isNewElement = false, canvasRef, prevPencilX, prevPencilY, endX, endY, lineWidth, strokeColor = 'white' }) => {
+    const ctx = canvasRef.current.getContext('2d')
+
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = strokeColor === 'gray' ? 'white' : strokeColor
+    ctx.beginPath()
+    ctx.moveTo(prevPencilX, prevPencilY)
+    ctx.lineTo(endX, endY)
+    ctx.stroke()
+    ctx.fill()
+  }
+
+  // Fn- Draw text
+  const drawText = ({ isSelectedItem = false, isNewElement = false, canvasRef, text = null, screenX, screenY, textColor = 'white', fontSize = 20, fontStyle = 'Arial' }) => {
+    const ctx = canvasRef.current.getContext('2d')
+    if (text) {
+      ctx.fillStyle = textColor
+      ctx.font = `${fontSize}px ${fontStyle}`
+      ctx.fillText(text, screenX, screenY)
+    } else {
+      console.log('text not found')
+    }
+
+
+    if (isSelectedItem) {
+      const boundaryDiff = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--selected-item-boundry-difference'))
+      let sX = screenX - boundaryDiff
+      let sY = screenY - boundaryDiff * 2 - fontSize / 2
+      let sWidth = ctx.measureText(text).width + boundaryDiff * 2
+      let sHeight = fontSize + boundaryDiff
+      let sStrokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--select-area-border-color')
+      ctx.strokeStyle = sStrokeStyle
+      ctx.lineWidth = getComputedStyle(document.documentElement).getPropertyValue('--selected-item-border-width')
+      ctx.strokeRect(sX, sY, sWidth, sHeight);
+      drawSelectionBoundary({ type: 'text', sX, sY, sWidth, sHeight })
+    }
+
+
+  }
+
+  // section- storeing and managing the items in arrays
+
+  const [canFireStoreItemFromSelectedElementsToMainElements, setCanFireStoreItemFromSelectedElementsToMainElements] = useState(false)
+
+  // storeing new item in selected elements array
+  const addItemInSelectedElementsArray = (arrgs) => {
+    setSelectedElements([arrgs])
+  }
+
+  // parse the values and store send them to store in selcted elements array
+  const addNewItemInArr = ({ selectedItem, type, text, textColor, fontSize, fontStyle, screenX, screenY, startX, startY, endX, endY, prevPencilX, prevPencilY }) => {
+    let fillColor = currPastelColorRef.current || currBoldColorRef.current
+    let strokeColor = currOutlineColorRef.current
+    let isDashed = currDashLineRef.current
+    let arrowHeadDir = currArrowHeadDirRef.current
+
+    if (type === 'rectangle') {
+      addItemInSelectedElementsArray({ elementType: type, x: startX, y: startY, height: endY - startY, width: endX - startX, strokeColor, borderRadius: 10, fillColor })
+    } else if (type === 'circle') {
+      let centerX = (startX + endX) / 2
+      let centerY = (startY + endY) / 2
+      addItemInSelectedElementsArray({ elementType: type, x: centerX, y: centerY, radius: Math.sqrt(Math.pow(startX - centerX, 2) + Math.pow(startY - centerY, 2)), fillColor, strokeColor })
+    }
+    else if (type === 'arrow') {
+      let tolerance = 10
+
+      // Calculate the selection area around the line
+      const angle = Math.atan2(endY - startY, endX - startX);
+
+      // Offset vectors perpendicular to the line
+      const offsetX = Math.sin(angle) * tolerance;
+      const offsetY = -Math.cos(angle) * tolerance;
+
+      // Define polygon points (parallelogram around line)
+      const p1 = { x: startX + offsetX, y: startY + offsetY };
+      const p2 = { x: endX + offsetX, y: endY + offsetY };
+      const p3 = { x: endX - offsetX, y: endY - offsetY };
+      const p4 = { x: startX - offsetX, y: startY - offsetY };
+
+      addItemInSelectedElementsArray({ polygon: [p1, p2, p3, p4], elementType: type, startX, startY, endX, endY, arrowSize: 10, arrowHeadDir, strokeColor })
+    }
+    else if (type === 'line') {
+      let tolerance = 10
+
+      // Calculate the selection area around the line
+      const angle = Math.atan2(endY - startY, endX - startX);
+
+      // Offset vectors perpendicular to the line
+      const offsetX = Math.sin(angle) * tolerance;
+      const offsetY = -Math.cos(angle) * tolerance;
+
+      // Define polygon points (parallelogram around line)
+      const p1 = { x: startX + offsetX, y: startY + offsetY };
+      const p2 = { x: endX + offsetX, y: endY + offsetY };
+      const p3 = { x: endX - offsetX, y: endY - offsetY };
+      const p4 = { x: startX - offsetX, y: startY - offsetY };
+      addItemInSelectedElementsArray({ polygon: [p1, p2, p3, p4], elementType: type, startX, startY, endX, endY, strokeColor })
+    }
+    else if (type === 'pencil') {
+      addItemInSelectedElementsArray({ elementType: type, prevPencilX, prevPencilY, endX, endY, lineWidth: 3, pencilSize: 10, fillColor, strokeColor })
+    }
+    else if (type === 'text') {
+      fillColor !== null ? fillColor : fillColor = 'white'
+      addItemInSelectedElementsArray({ elementType: type, text, screenX, screenY, textColor, fontSize, fontStyle })
+    }
+
+  }
+
+  // store selcted element in main element
+  const storeItemFromSelectedElementsToMainElements = () => {
+    if (selectedElements.length > 0) {
+      selectedElements[0].canvasRef = bottomCanvasRef
+      delete selectedElements[0].isSelectedItem
+      setMainElements([...mainElements, ...selectedElements])
+      setSelectedElements([])
+      setCanFireStoreItemFromSelectedElementsToMainElements(false)
+    }
+  }
+
+  // when sidebar selected button changes add selcted element into main element array if any
+  useEffect(() => {
+    storeItemFromSelectedElementsToMainElements()
+  }, [sidebarSelectedBtn])
+
+  // Section- Functions to draw on canvas
+
+  const drawSelectionArea = (startPointX, startPointY, newMouseX, newMouseY) => {
+    const rectWidth = newMouseX - startPointX
+    const rectHeight = newMouseY - startPointY
+
+    drawRectangle({ isNewElement: true, canvasRef: topCanvasRef, x: startPointX, y: startPointY, width: rectWidth, height: rectHeight, strokeColor: getComputedStyle(document.documentElement).getPropertyValue('--select-area-border-color'), fillColor: getComputedStyle(document.documentElement).getPropertyValue('--select-area-fill-color'), strokeWidth: 0.5 })
+  }
+
   const drawSelectedElementIndicator = (selectedBtn, mouseX, mouseY) => {
     const canvas = topCanvasRef.current
     const ctx = canvas.getContext('2d')
     if (selectedBtn === 'squareBtn') {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.strokeStyle = 'gray';
-      ctx.beginPath()
-      ctx.roundRect(mouseX, mouseY, 200, 100, 10)
-      ctx.stroke()
+      drawRectangle({ isNewElement: true, canvasRef: topCanvasRef, height: 100, width: 200, strokeColor: 'gray', x: mouseX, y: mouseY, borderRadius: 10 })
     } else if (selectedBtn === 'circleBtn') {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.beginPath()
-      ctx.strokeStyle = 'gray'
-      ctx.arc(mouseX + 35, mouseY + 35, 40, 0, 2 * Math.PI)
-      ctx.stroke()
+      drawCircle({ isNewElement: true, canvasRef: topCanvasRef, x: mouseX + 35, y: mouseY + 35, radius: 40, })
     }
   }
 
-  // this function draw selected element on canvas when the selcted element indicators are re-rendering the canvas
-  const drawSelectedElementsWhenIndicatorsReRendering = () => {
-    console.log(selectedElements)
+  const functionReferance = {
+    'rectangle': drawRectangle,
+    'circle': drawCircle,
+    'arrow': drawArrow,
+    'line': drawLine,
+    'handDraw': pencilDraw,
+    'text': drawText,
   }
 
-
-  // Section-4 functions to draw elements on canvas from elements[] and selectedElements[] array only
-
-  // function-4.1
-
-  // this function will draw what ever objectes are present in elements[] array on elements state change
+  // draw all items from mainElements
   useEffect(() => {
-    drawExistingElementsOnDrawingCanvasRef.current = () => {
-      const ctx = middleCanvasRef.current.getContext('2d')
-      elements.forEach(item => {
-        if (item.type === 'rectangle') {
-          ctx.fillStyle = item.color;
-          ctx.strokeStyle = item.strokeColor;
-          ctx.beginPath();
-          ctx.roundRect(item.x, item.y, item.width, item.height, 10)
-          ctx.stroke()
-          if (item.color !== null) {
-            console.log(`color applied ${item.color}`)
-            ctx.fill()
-          }
-        }
-        else if (item.type === 'circle') {
-          ctx.arc(item.x, item.y, item.radius, 0, 2 * Math.PI)
-          ctx.fillStyle = item.color;
-          ctx.fill()
-          ctx.stroke()
-        }
-        else if (item.type === 'text') {
-          ctx.fillStyle = item.color;
-          ctx.font = item.font;
-          ctx.fillText(item.text, item.x, item.y)
-        }
-        else if (item.type === 'arrow') {
-          ctx.beginPath()
-          ctx.moveTo(item.startX, item.startY)
-          ctx.lineTo(item.endX, item.endY)
-          ctx.strokeStyle = item.color
-          ctx.stroke()
+    drawMainElementsArrRef.current = () => {
+      const ctx = bottomCanvasRef.current.getContext('2d')
+      ctx.clearRect(0, 0, bottomCanvasRef.current.width, bottomCanvasRef.current.height)
+      mainElements.forEach(item => {
+        if (Object.keys(functionReferance).includes(item.elementType)) {
+          item.canvasRef = bottomCanvasRef
+          const functions = Object.entries(functionReferance)
+          const fn = functions.filter(fn => fn[0] === item.elementType)
+          fn[0][1](item)
         }
       })
     }
-    drawExistingElementsOnDrawingCanvasRef.current()
-    setDrawExistingElementsOnDrawingCanvas(() => drawExistingElementsOnDrawingCanvasRef.current)
-  }, [elements])
+    setDrawMainElementsArr(() => drawMainElementsArrRef.current)
+    drawMainElementsArrRef.current()
+  }, [mainElements])
 
-  // function-4.2
 
-  // this function will draw what ever objectes are presnt in selectedElements[] array on selectedElements state change
+  // draw all items from selectedElements
   useEffect(() => {
-    drawSelectedElementOnCanvasRef.current = () => {
-      console.log(selectedElements)
-      if (selectedElements.length > 0) {
-        selectedElements.forEach(item => {
-          console.log('will draw selected element here')
-        })
-      } else {
-        console.log('no selected element')
-      }
+    drawSelectedElementsArrRef.current = () => {
+      const ctx = topCanvasRef.current.getContext('2d')
+      ctx.clearRect(0, 0, topCanvasRef.current.width, topCanvasRef.current.height)
+      selectedElements.forEach(item => {
+        if (Object.keys(functionReferance).includes(item.elementType)) {
+          item.canvasRef = topCanvasRef
+          item.isSelectedItem = true
+          const functions = Object.entries(functionReferance)
+          const fn = functions.filter(fn => fn[0] === item.elementType)
+          fn[0][1](item)
+        }
+      })
     }
-    drawSelectedElementOnCanvasRef.current()
-    setDrawSelectedElementOnCanvas(() => drawSelectedElementOnCanvasRef.current)
+    setDrawSelectedElementsArr(() => drawSelectedElementsArrRef.current)
+    drawSelectedElementsArrRef.current()
+    if (selectedElements.length > 0) {
+      setCanFireStoreItemFromSelectedElementsToMainElements(true)
+    }
   }, [selectedElements])
 
 
-
-
-  // Section-5 simulate to draw new item on canvas
-
-  // function-5.1
-
-  //this function simulate (draw) new element on top canvas
+  //draw new item on canvas
   useEffect(() => {
-    //add text on canvas
-    const addTextOnCanvas = (screenX, screenY, event) => {
-      console.log(event.target.innerHTML)
-      const canvas = topCanvasRef.current;
-      const ctx = canvas.getContext('2d')
-      let font = event.target.innerHTML
-      ctx.fillStyle = 'white'
-      ctx.font = "20px Arial"
-      ctx.fillText(font, screenX, screenY)
-    }
-
-    //draw new item on canvas
-    drawNewItemOnCanvasRef.current = (selectedItem, startX, startY, endX, endY, prevPencilX, prevPencilY, screenX, screenY) => {
+    drawNewItemRef.current = (selectedItem, startX, startY, endX, endY, prevPencilX, prevPencilY, screenX, screenY) => {
       const canvas = topCanvasRef.current
       const ctx = canvas.getContext('2d')
       if (selectedItem === 'squareDraw') {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        ctx.fillStyle = currPastelColorRef.current || currBoldColorRef.current;
-        ctx.strokeStyle = currOutlineColorRef.current;
-        const width = endX - startX
-        const height = endY - startY
-        ctx.beginPath()
-        ctx.roundRect(startX, startY, width, height, 10)
-        if (currPastelColorRef.current || currBoldColorRef.current) {
-          console.log('entered')
-          ctx.fill()
-        }
-        ctx.stroke()
+
+        drawRectangle({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, x: startX, y: startY, height: endY - startY, width: endX - startX, strokeColor: currOutlineColorRef.current, borderRadius: 10, fillColor: currPastelColorRef.current || currBoldColorRef.current })
+
       } else if (selectedItem === 'circleDraw') {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        ctx.beginPath()
-        ctx.strokeStyle = currPastelColor
         let centerX = (startX + endX) / 2
         let centerY = (startY + endY) / 2
         let radius = Math.sqrt(Math.pow(startX - centerX, 2) + Math.pow(startY - centerY, 2))
-        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
-        ctx.stroke()
+
+        drawCircle({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, x: centerX, y: centerY, radius: radius, fillColor: currPastelColorRef.current || currBoldColorRef.current, strokeColor: currOutlineColorRef.current })
       } else if (selectedItem === 'arrowDraw') {
-        const arrowSize = 10;
-        const angle = Math.atan2(endY - startY, endX - startX);
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        ctx.beginPath()
-        ctx.strokeStyle = 'gray'
-        ctx.moveTo(startX, startY);  // Move to starting point
-        ctx.lineTo(endX, endY);      // Draw line to this point
-        ctx.stroke()
-
-        // Calculate arrowhead points (rotated ±30 degrees)
-        const arrowX1 = endX - arrowSize * Math.cos(angle - Math.PI / 6);
-        const arrowY1 = endY - arrowSize * Math.sin(angle - Math.PI / 6);
-        const arrowX2 = endX - arrowSize * Math.cos(angle + Math.PI / 6);
-        const arrowY2 = endY - arrowSize * Math.sin(angle + Math.PI / 6);
-
-        // Draw arrowhead
-        ctx.beginPath();
-        ctx.moveTo(endX, endY);
-        ctx.lineTo(arrowX1, arrowY1);
-        ctx.moveTo(endX, endY);
-        ctx.lineTo(arrowX2, arrowY2);
-        ctx.stroke();
+        drawArrow({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, startX, startY, endX, endY, arrowSize: 10, arrowHeadDir: currArrowHeadDirRef.current, strokeColor: currOutlineColorRef.current })
       } else if (selectedItem === 'lineDraw') {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        ctx.beginPath()
-        ctx.strokeStyle = 'gray'
-        ctx.moveTo(startX, startY);  // Move to starting point
-        ctx.lineTo(endX, endY);      // Draw line to this point
-        ctx.stroke()
+
+        drawLine({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, startX, startY, endX, endY, strokeColor: currOutlineColorRef.current })
       } else if (selectedItem === 'pencilDraw') {
-        ctx.lineWidth = 3;
-        ctx.fillStyle = 'white'
-        ctx.strokeStyle = 'white'
-        ctx.beginPath()
-        // ctx.arc(endX, endY, pencilSize, 0, 2 * Math.PI)
-        ctx.moveTo(prevPencilX, prevPencilY)
-        ctx.lineTo(endX, endY)
-        ctx.stroke()
-        ctx.fill()
+
+        pencilDraw({ isNewElement: true, canvasRef: topCanvasRef, prevPencilX, prevPencilY, endX, endY, lineWidth: 3, pencilSize: 10, fillColor: currPastelColorRef.current || currBoldColorRef.current, strokeColor: currOutlineColorRef.current })
       } else if (selectedItem === 'textDraw') {
-        console.log("text")
-        console.log(`screenX: ${screenX} screenY: ${screenY}`)
-        console.log(`startX: ${startX} startY: ${startY}`)
+
+        // there are two ways of adding text in canvas 1 press Enter after enter text 2 click on canvas outside the text box
+
+        setIsTextEditing(true)
+
+        let text = ''
+        let fontSize = currFontSizeRef.current
+        let fontStyle = currFontStyleRef.current || 'Arial'
+        let textColor = currPastelColorRef.current || currBoldColorRef.current || 'white'
+
         const newP = document.createElement('p')
         newP.contentEditable = true
         newP.autofocus = true
         newP.className = 'textField'
+        newP.style.boxSizing = 'content-box'
         newP.style.padding = '0px 3px'
-        newP.style.minHeight = 'auto'
+        newP.style.height = `${fontSize + 10}px`
         newP.style.minWidth = '100px'
         newP.style.maxWidth = '200px'
         newP.style.backgroundColor = 'tranceparent'
-        newP.style.color = 'white'
+        newP.style.fontFamily = `${fontStyle}`
+        newP.style.color = textColor
+        newP.style.fontSize = `${fontSize}px`
         newP.style.position = 'absolute'
-        newP.style.top = `${screenY}px`
+        newP.style.top = `${screenY - fontSize}px`
         newP.style.left = `${screenX}px`
         newP.addEventListener('keydown', (event) => {
-          console.log(event)
-          if (event.key === 'Enter') {
+          text = event.target.innerHTML
+          if (event.key === 'Enter' && text.length > 0) {
             event.preventDefault()
-            addTextOnCanvas(screenX, screenY, event)
+            drawText({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, text, textColor, screenX, screenY })
+            addNewItemInArr({ selectedItem, type: 'text', text, textColor, fontSize, fontStyle, screenX, screenY })
             newP.remove()
+            text = ''
+            setIsTextEditing(false)
           }
         })
         document.getElementById('root').appendChild(newP)
-        console.log(newP.innerHTML.length)
-        if (newP.innerHTML.length > 0) {
-          console.log('entered')
-          document.body.addEventListener('click', () => {
-            console.log('text printed')
-          })
+        const addTextOnClick = () => {
+          if (text.length > 0) {
+            drawText({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, text, textColor, screenX, screenY })
+            addNewItemInArr({ selectedItem, type: 'text', text, textColor, fontSize, fontStyle, screenX, screenY })
+            newP.remove()
+            text = ''
+            setIsTextEditing(false)
+          }
+        }
+        topCanvasRef.current.addEventListener('click', addTextOnClick)
+        return () => {
+          topCanvasRef.current.removeEventListener('click', addTextOnClick)
         }
       }
     }
 
-    setDrawNewItemOnCanvas(() => drawNewItemOnCanvasRef.current)
+    setDrawNewItem(() => drawNewItemRef.current)
   }, [currPastelColor, currBoldColor, currOutlineColor])
-
-  // Section-6 updating the elements[] and selectedElements[] array by adding or deleting elements
-
-  // function-6.1
-
-  // this function manage the elements[] and selectedElements[] array
-  useEffect(() => {
-    let newElementsArray = null
-    let oldSelectedElementsArray = [...selectedElements]
-    updateElementsAndSelctedElementsRef.current = (newElement) => {
-      if (oldSelectedElementsArray.length > 0) {
-        newElementsArray = [...elements, ...selectedElements]
-        setElements(newElementsArray)
-      }
-      let newSelctedElementsArray = []
-      newSelctedElementsArray.push(newElement)
-      setSelectedElements((prev) => newSelctedElementsArray)
-    }
-    setUpdateElementsAndSelctedElements(() => updateElementsAndSelctedElementsRef.current)
-  }, [])
-
-  // function-6.2
-
-  // this function get the new item data and pass the item object to updateElementsAndSelctedElements function
-  const addItemOnCanvas = (selectedItem, type, startX, startY, endX, endY, prevPencilX, prevPencilY) => {
-    let newElement = null
-    // { type: "rectangle", x: 100, y: 100, width: 120, height: 80, color: "blue" }
-    if (type === 'rectangle') {
-      const width = endX - startX
-      const height = endY - startY
-      newElement = {
-        type: type,
-        x: startX,
-        y: startY,
-        width: width,
-        height: height,
-        color: currBoldColorRef.current,
-        strokeColor: currOutlineColorRef.current,
-      }
-      updateElementsAndSelctedElements(newElement)
-    }
-  }
 
   return (
     <>
-      <drawCanvasContext.Provider value={{ elements, selectedElements, topCanvasRef, middleCanvasRef, mainCanvasRef, drawExistingElementsOnDrawingCanvas,  drawSelectionArea, drawSelectedElementIndicator, drawSelectedElementsWhenIndicatorsReRendering, drawNewItemOnCanvas, addItemOnCanvas, addSelectedElementsInElementsArray }}>
+      <drawCanvasContext.Provider value={{ mainElements, setMainElements, selectedElements, setSelectedElements, topCanvasRef, middleCanvasRef, bottomCanvasRef, isTextEditing, canFireStoreItemFromSelectedElementsToMainElements, storeItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr }}>
         {children}
       </drawCanvasContext.Provider>
     </>

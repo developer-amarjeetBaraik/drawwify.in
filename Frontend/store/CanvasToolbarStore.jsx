@@ -18,7 +18,7 @@ export const toolbarComponentsValueContext = createContext({
     setCurrFontStyle: () => { },
     currLineType: null,
     setCurrLineType: () => { },
-    currArrowHead: [],
+    currArrowHeadDir: [],
     setCurrArrowHead: () => { },
     currDashLine: false,
     setCurrDashLine: () => { },
@@ -43,7 +43,7 @@ const CanvasToolbarStore = ({ children }) => {
     const [currOutlineColor, setCurrOutlineColor] = useState('gray')
 
     //current font size
-    const [currFontSize, setCurrFontSize] = useState('10px')
+    const [currFontSize, setCurrFontSize] = useState(20)
 
     //current font style/typograhy
     const [currFontStyle, setCurrFontStyle] = useState('Sans-serif')
@@ -52,7 +52,7 @@ const CanvasToolbarStore = ({ children }) => {
     const [currLineType, setCurrLineType] = useState('Straight')
 
     //current arrow head
-    const [currArrowHead, setCurrArrowHead] = useState([])
+    const [currArrowHeadDir, setCurrArrowHead] = useState([])
 
     //current dash line state
     const [currDashLine, setCurrDashLine] = useState(false)
@@ -63,10 +63,6 @@ const CanvasToolbarStore = ({ children }) => {
     //current Eraser pointer size
     const [currEraserPointerSize, setCurrEraserPointerSize] = useState(null)
 
-    useEffect(() => {
-        console.log(currOutlineColor)
-    }, [currOutlineColor])
-
 
     const changeSelectedBtnName = (btnName) => {
         if (btnName === selectedBtnName) {
@@ -76,7 +72,7 @@ const CanvasToolbarStore = ({ children }) => {
         }
     }
     return (
-        <toolbarComponentsValueContext.Provider value={{ currPastelColor, setCurrPatelColor, currBoldColor, setCurrBoldColor, currOutlineColor, setCurrOutlineColor, currFontSize, setCurrFontSize, currFontStyle, setCurrFontStyle, currLineType, setCurrLineType, currArrowHead, setCurrArrowHead, currDashLine, setCurrDashLine, currPencilPointerSize, setCurrPencilPointerSize, currEraserPointerSize, setCurrEraserPointerSize }}>
+        <toolbarComponentsValueContext.Provider value={{ currPastelColor, setCurrPatelColor, currBoldColor, setCurrBoldColor, currOutlineColor, setCurrOutlineColor, currFontSize, setCurrFontSize, currFontStyle, setCurrFontStyle, currLineType, setCurrLineType, currArrowHeadDir, setCurrArrowHead, currDashLine, setCurrDashLine, currPencilPointerSize, setCurrPencilPointerSize, currEraserPointerSize, setCurrEraserPointerSize }}>
             <toolbarBtnContext.Provider value={{ selectedBtnName, changeSelectedBtnName }}>
                 {children}
             </toolbarBtnContext.Provider>
