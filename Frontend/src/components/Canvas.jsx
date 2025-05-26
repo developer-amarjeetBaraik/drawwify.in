@@ -6,7 +6,7 @@ import { drawCanvasContext } from '../../store/CanvasDrowStore';
 const Canvas = () => {
 
 
-  const { mainElements, setMainElements, selectedElements, setSelectedElements, bottomCanvasRef, middleCanvasRef, topCanvasRef, isTextEditing, canFireStoreItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr, storeItemFromSelectedElementsToMainElements, initialDrawAllElements } = useContext(drawCanvasContext)
+  const { mainElements, setMainElements, selectedElements, setSelectedElements, bottomCanvasRef, middleCanvasRef, topCanvasRef, isTextEditing, canFireStoreItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints, storeItemFromSelectedElementsToMainElements, initialDrawAllElements } = useContext(drawCanvasContext)
 
   const { sidebarSelectedBtn, changeSidebarSelectedBtn } = useContext(sidebarSelectedBtnContext)
 
@@ -140,19 +140,6 @@ const Canvas = () => {
     }
   }, [sidebarSelectedBtn, selectedElements])
 
-  // code to add item from selectedElement array to mainElements array
-  useEffect(() => {
-    const handleClick = (event) => {
-      storeItemFromSelectedElementsToMainElements()
-    }
-    if (selectedElements.length > 0 && canFireStoreItemFromSelectedElementsToMainElements) {
-      topCanvasRef.current.addEventListener('click', handleClick)
-    }
-    return () => {
-      topCanvasRef.current.removeEventListener('click', handleClick)
-    }
-  }, [selectedElements, canFireStoreItemFromSelectedElementsToMainElements])
-
   //code to draw and add item on canvas
 
   //to provide the updated state to the functions
@@ -223,7 +210,7 @@ const Canvas = () => {
     const handleMouseDragOnCanvas = (event) => {
       endX = event.offsetX
       endY = event.offsetY
-      if (isDraggingRef.current && sidebarSelectedBtn === 'cursorBtn') {
+      if (isDraggingRef.current && sidebarSelectedBtn === 'cursorBtn' && selectedElements.length <= 0) {
         //draw the selection area if the sidebar button is cursorBtn
         drawSelectionArea(startX, startY, event.offsetX, event.offsetY)
       } else if (isDraggingRef.current && selectedItem != 'textDraw') {
@@ -239,7 +226,7 @@ const Canvas = () => {
       setStartY(prev => null)
       const endX = event.offsetX;
       const endY = event.offsetY;
-      if (sidebarSelectedBtn === 'cursorBtn') {
+      if (sidebarSelectedBtn === 'cursorBtn' && selectedElements.length <= 0) {
         ctx.clearRect(0, 0, topCanvasRef.current.width, topCanvasRef.current.height)
       }
       if (sidebarSelectedBtn !== 'cursorBtn' && type !== 'text') {
@@ -257,26 +244,27 @@ const Canvas = () => {
       canvas.removeEventListener('mousemove', handleMouseDragOnCanvas)
       canvas.removeEventListener('mouseup', handleMouseUpOnCanvas)
     }
-  }, [sidebarSelectedBtn, startX, startY, prevPencilX, prevPencilY])
+  }, [sidebarSelectedBtn, selectedElements, startX, startY, prevPencilX, prevPencilY])
 
   //code the select the element on canvas
+  function isPointInPolygon(polygon, x, y) {
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].x, yi = polygon[i].y;
+      const xj = polygon[j].x, yj = polygon[j].y;
+
+      const intersect = ((yi > y) !== (yj > y)) &&
+        (x < ((xj - xi) * (y - yi)) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  }
+
   useEffect(() => {
     const canvas = topCanvasRef.current;
     const ctx = canvas.getContext('2d')
     const rect = canvas.getBoundingClientRect();
 
-    function isPointInPolygon(polygon, x, y) {
-      let inside = false;
-      for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-        const xi = polygon[i].x, yi = polygon[i].y;
-        const xj = polygon[j].x, yj = polygon[j].y;
-
-        const intersect = ((yi > y) !== (yj > y)) &&
-          (x < ((xj - xi) * (y - yi)) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-      }
-      return inside;
-    }
 
     // check if any element clicked
     const handleCanvasClick = (event) => {
@@ -286,7 +274,7 @@ const Canvas = () => {
 
       if (selectedElements.length < 1 && sidebarSelectedBtn === 'cursorBtn') {
 
-        const clickedElement = mainElements.find((el, index) => {
+        const clickedElement = mainElements.find((el) => {
           switch (el.elementType) {
             case 'rectangle':
               return (
@@ -299,7 +287,6 @@ const Canvas = () => {
               const boundaryDiff = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--selected-item-boundry-difference'))
               let sX = el.screenX - boundaryDiff
               let sY = el.screenY - boundaryDiff * 2 - el.fontSize / 2
-              console.log(el.text)
               ctx.font = `${el.fontSize}px ${el.fontStyle ? el.fontStyle : 'Arial'}`
               let width = ctx.measureText(el.text).width + boundaryDiff * 2
               let height = el.fontSize + boundaryDiff
@@ -342,9 +329,153 @@ const Canvas = () => {
     }
   }, [mainElements, selectedElements, sidebarSelectedBtn])
 
+
+  // code to hit detection on editing points and re-sizing the element if it's not then add selected elements on mainElements array and reset all resizing points
+
+  const isReSizingRef = useRef(false)
+  const clickedPointRef = useRef({})
   useEffect(() => {
-    console.log('main elements')
-    console.log(mainElements)
+    const canvas = topCanvasRef.current;
+    const ctx = canvas.getContext('2d')
+    const rect = canvas.getBoundingClientRect();
+    const boundaryDiff = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--selected-item-boundry-difference'))
+    const radius = 5
+    let resizingPoints = []
+    const handleResizingPointClick = (event) => {
+      resizingPoints = [tLRef.current, tRRef.current, bRRef.current, bLRef.current, lStart.current, lEnd.current]
+      // Mouse coordinates relative to canvas
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      // checking if the user clicked on the selection points
+      clickedPointRef.current = resizingPoints.find((point) => {
+        const dx = mouseX - point.x;
+        const dy = mouseY - point.y;
+        if (dx * dx + dy * dy <= radius * radius) {
+          return dx * dx + dy * dy <= radius * radius;
+        }
+      })
+
+      // checking if the user clicked the selected boundry of the selected element
+      const clickedInsideBoundary = isPointInPolygon([{ x: tLRef.current.x, y: tLRef.current.y }, { x: tRRef.current.x, y: tRRef.current.y }, { x: bRRef.current.x, y: bRRef.current.y }, { x: bLRef.current.x, y: bLRef.current.y }], mouseX, mouseY)
+
+      // checking if the user clicked the selected line or arrow
+      const isClickedOnSelectedLine = selectedElements.length > 0 && (selectedElements[0].elementType === 'line' || selectedElements[0].elementType === 'arrow') ? isPointInPolygon(selectedElements[0].polygon, mouseX, mouseY) : false;
+
+      if (clickedPointRef.current) {
+        console.log('point clicked')
+        isReSizingRef.current = true
+      } else if (clickedInsideBoundary) {
+        null;
+      } else if (isClickedOnSelectedLine) {
+        null;
+      } else {
+        storeItemFromSelectedElementsToMainElements()
+        resetAllResizingPoints()
+      }
+
+    }
+
+    const reSizeTheSelectedElement = (event) => {
+      // Mouse coordinates relative to canvas
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+      let newArr = selectedElements[0]
+
+      if (isReSizingRef.current) {
+        selectedElements.forEach((item) => {
+          console.log(clickedPointRef.current)
+          switch (item.elementType) {
+            case 'rectangle':
+              switch (clickedPointRef.current.name) {
+                case 'topLeft':
+                  // tLRef.current.x = mouseX
+                  // tLRef.current.y = mouseY
+                  // newArr.height = (bLRef.current.y - tLRef.current.y) - boundaryDiff * 2
+                  // updateing resizing points
+                  // top left
+                  newArr.x = mouseX + boundaryDiff
+                  newArr.y = mouseY + boundaryDiff
+                  newArr.width = (tRRef.current.x - tLRef.current.x) - boundaryDiff
+                  newArr.height = (bLRef.current.y - tLRef.current.y) - boundaryDiff
+                  console.log(newArr.width, newArr.height)
+                  // top right
+                  tRRef.current.x = mouseX + selectedElements[0].width + boundaryDiff * 2
+                  tRRef.current.y = mouseY + selectedElements[0].width + boundaryDiff * 2
+                  // bottom left
+                  bLRef.current.x = mouseX
+                  bLRef.current.y = mouseY + selectedElements[0].height + boundaryDiff * 2
+                  // bottom rught
+                  bRRef.current.x = tRRef.current.x
+                  bRRef.current.y = bLRef.current.y
+
+                  setSelectedElements([newArr])
+                  break;
+                case 'topRight':
+                  break;
+                case 'bottomLeft':
+                  break;
+                case 'bottomRight':
+                  break;
+              }
+              break;
+            case 'circle':
+              switch (clickedPointRef.current.name) {
+                case 'topLeft':
+                  break;
+                case 'topRight':
+                  break;
+                case 'bottomLeft':
+                  break;
+                case 'bottomRight':
+                  break;
+              }
+              break;
+            case 'text':
+              switch (clickedPointRef.current.name) {
+                case 'topLeft':
+                  break;
+                case 'topRight':
+                  break;
+                case 'bottomLeft':
+                  break;
+                case 'bottomRight':
+                  break;
+              }
+              break;
+            case 'arrow':
+            case 'line':
+              switch (clickedPointRef.current.name) {
+                case 'lineStart':
+                  break;
+                case 'lineEnd':
+                  break;
+              }
+              break;
+
+            default:
+              break;
+          }
+        })
+      }
+    }
+
+    const handleResizingMouseUp = () => {
+      isReSizingRef.current = false
+    }
+    canvas.addEventListener('mousedown', handleResizingPointClick)
+    canvas.addEventListener('mousemove', reSizeTheSelectedElement)
+    canvas.addEventListener('mouseup', handleResizingMouseUp)
+    return () => {
+      canvas.removeEventListener('mousedown', handleResizingPointClick)
+      canvas.removeEventListener('mousemove', reSizeTheSelectedElement)
+      canvas.removeEventListener('mouseup', handleResizingMouseUp)
+    }
+  }, [selectedElements, tLRef, tRRef, bRRef, bLRef, lStart, lEnd])
+
+  useEffect(() => {
+    // console.log('main elements')
+    // console.log(mainElements)
     console.log('selected elements')
     console.log(selectedElements)
   }, [selectedElements, mainElements])

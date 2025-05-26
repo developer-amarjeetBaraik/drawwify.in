@@ -20,6 +20,13 @@ export const drawCanvasContext = createContext({
   addNewItemInArr: () => { },
   drawMainElementsArr: () => { },
   drawSelectedElementsArr: () => { },
+  tLRef: {},
+  tRRef: {},
+  bLRef: {},
+  bRRef: {},
+  lStart: {},
+  lEnd: {},
+  resetAllResizingPoints: () => { },
 })
 
 
@@ -34,7 +41,7 @@ const CanvasDrowStore = ({ children }) => {
   // Section- storing the state of all mainElements present on canvas
 
   //mainElements array
-  const [mainElements, setMainElements] = useState([{ elementType: 'rectangle', x: 100, y: 200, width: 500, height: 200, strokeColor: 'blue', fillColor: 'yellow', strokeWidth: 1.5, borderRadius: 10 }, { elementType: 'circle', x: 800, y: 190, radius: 90, strokeColor: 'pink', strokeWidth: 3 }, { elementType: 'text', text: 'Amarjeet', fontSize: 20, fontStyle: 'Arial', screenX: 1100, screenY: 250, textColor: 'white' }, { elementType: 'text', text: 'Amarjeet', fontSize: 20, fontStyle: 'Arial', screenX: 950, screenY: 160, textColor: 'white' }])
+  const [mainElements, setMainElements] = useState([{ elementType: 'rectangle', x: 500, y: 200, width: 500, height: 200, strokeColor: 'blue', fillColor: 'yellow', strokeWidth: 1.5, borderRadius: 10 }, { elementType: 'circle', x: 800, y: 190, radius: 90, strokeColor: 'pink', strokeWidth: 3 }, { elementType: 'text', text: 'Amarjeet', fontSize: 20, fontStyle: 'Arial', screenX: 1100, screenY: 250, textColor: 'white' }, { elementType: 'text', text: 'Amarjeet', fontSize: 20, fontStyle: 'Arial', screenX: 950, screenY: 160, textColor: 'white' }])
 
   //selectedElements array
   const [selectedElements, setSelectedElements] = useState([])
@@ -64,14 +71,14 @@ const CanvasDrowStore = ({ children }) => {
   const [isTextEditing, setIsTextEditing] = useState(false)
 
   // re-sizing points state
-  const [resizingPoints, setResizingPoints] = useState([{ tL: { tLx: null, tLy: null }, tR: { tRx: null, tRy: null }, bL: { bLx: null, bLy: null }, bR: { bRx: null, bRy: null } }])
+  const [resizingPoints, setResizingPoints] = useState([])
 
-  const tLRef = useRef({ x: null, y: null })
-  const tRRef = useRef({ x: null, y: null })
-  const bLRef = useRef({ x: null, y: null })
-  const bRRef = useRef({ x: null, y: null })
-  const lStart = useRef({ x: null, y: null })
-  const lEnd = useRef({ x: null, y: null })
+  const tLRef = useRef({ name: 'topLeft', x: null, y: null })
+  const tRRef = useRef({ name: 'topRight', x: null, y: null })
+  const bLRef = useRef({ name: 'bottomLeft', x: null, y: null })
+  const bRRef = useRef({ name: 'bottomRight', x: null, y: null })
+  const lStart = useRef({ name: 'lineStart', x: null, y: null })
+  const lEnd = useRef({ name: 'lineEnd', x: null, y: null })
 
 
   // Section- maneging the states of toolbar values
@@ -108,6 +115,16 @@ const CanvasDrowStore = ({ children }) => {
 
   // Section- Helping functions
 
+  // Fn- reset all the resizeing points points
+  const resetAllResizingPoints = () => {
+    tLRef.current = { name: 'topLeft', x: null, y: null }
+    tRRef.current = { name: 'topRight', x: null, y: null }
+    bLRef.current = { name: 'bottomLeft', x: null, y: null }
+    bRRef.current = { name: 'bottomRight', x: null, y: null }
+    lStart.current = { name: 'lineStart', x: null, y: null }
+    lEnd.current = { name: 'lineEnd', x: null, y: null }
+  }
+
   // Fn - draw selection boundry
   const drawSelectionBoundary = ({ type, sX, sY, sWidth, sHeight, startX, startY, endX, endY }) => {
     const ctx = topCanvasRef.current.getContext('2d')
@@ -134,10 +151,10 @@ const CanvasDrowStore = ({ children }) => {
       case 'rectangle':
       case 'circle':
       case 'text':
-        tLRef.current = { x: sX, y: sY }
-        tRRef.current = { x: sX + sWidth, y: sY }
-        bLRef.current = { x: sX, y: sY + sHeight }
-        bRRef.current = { x: sX + sWidth, y: sY + sHeight }
+        tLRef.current = { name: 'topLeft', x: sX, y: sY }
+        tRRef.current = { name: 'topRight', x: sX + sWidth, y: sY }
+        bLRef.current = { name: 'bottomLeft', x: sX, y: sY + sHeight }
+        bRRef.current = { name: 'bottomRight', x: sX + sWidth, y: sY + sHeight }
 
         // top line
         drawBoundaryLine(tLRef.current.x, tLRef.current.y, tRRef.current.x, tRRef.current.y)
@@ -163,10 +180,8 @@ const CanvasDrowStore = ({ children }) => {
       case 'arrow':
       case 'line':
 
-        lStart.current.x = startX
-        lStart.current.y = startY
-        lEnd.current.x = endX
-        lEnd.current.y = endY
+        lStart.current = { name: 'lineStart', x: startX, y: startY }
+        lEnd.current = { name: 'lineEnd', x: endX, y: endY }
 
         ctx.beginPath()
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--select-area-border-color')
@@ -198,6 +213,7 @@ const CanvasDrowStore = ({ children }) => {
   const drawRectangle = ({ isSelectedItem = false, isNewElement = false, canvasRef, x, y, width, height, strokeColor, fillColor = 'transparent', strokeWidth = 1.5, borderRadius = 0, }) => {
     const ctx = canvasRef.current.getContext('2d')
     ctx.save();
+    console.log('calling')
 
     if (isNewElement) {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
@@ -248,10 +264,10 @@ const CanvasDrowStore = ({ children }) => {
       drawSelectionBoundary({ type: 'circle', sX, sY, sWidth, sHeight })
     }
 
-    ctx.beginPath()
     ctx.fillStyle = fillColor
     ctx.strokeStyle = strokeColor
     ctx.strokeWidth = strokeWidth
+    ctx.beginPath()
     ctx.arc(x, y, radius, 0, 2 * Math.PI)
     if (fillColor != 'transparent') {
       ctx.fill()
@@ -438,7 +454,8 @@ const CanvasDrowStore = ({ children }) => {
 
   // when sidebar selected button changes add selcted element into main element array if any
   useEffect(() => {
-    storeItemFromSelectedElementsToMainElements()
+    if (sidebarSelectedBtn !== 'cursorBtn')
+      storeItemFromSelectedElementsToMainElements()
   }, [sidebarSelectedBtn])
 
   // Section- Functions to draw on canvas
@@ -595,7 +612,7 @@ const CanvasDrowStore = ({ children }) => {
 
   return (
     <>
-      <drawCanvasContext.Provider value={{ mainElements, setMainElements, selectedElements, setSelectedElements, topCanvasRef, middleCanvasRef, bottomCanvasRef, isTextEditing, canFireStoreItemFromSelectedElementsToMainElements, storeItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr }}>
+      <drawCanvasContext.Provider value={{ mainElements, setMainElements, selectedElements, setSelectedElements, topCanvasRef, middleCanvasRef, bottomCanvasRef, isTextEditing, canFireStoreItemFromSelectedElementsToMainElements, storeItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints }}>
         {children}
       </drawCanvasContext.Provider>
     </>
