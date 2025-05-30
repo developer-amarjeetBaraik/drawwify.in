@@ -6,7 +6,7 @@ import { drawCanvasContext } from '../../store/CanvasDrowStore';
 const Canvas = () => {
 
 
-  const { mainElements, setMainElements, selectedElements, setSelectedElements, bottomCanvasRef, middleCanvasRef, topCanvasRef, isTextEditing, canFireStoreItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints, storeItemFromSelectedElementsToMainElements, initialDrawAllElements } = useContext(drawCanvasContext)
+  const { mainElements, setMainElements, selectedElements, setSelectedElements, bottomCanvasRef, middleCanvasRef, topCanvasRef, isTextEditing, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints, storeItemFromSelectedElementsToMainElements, initialDrawAllElements } = useContext(drawCanvasContext)
 
   const { sidebarSelectedBtn, changeSidebarSelectedBtn } = useContext(sidebarSelectedBtnContext)
 
@@ -313,7 +313,6 @@ const Canvas = () => {
         });
 
         if (clickedElement) {
-          console.log('Selected:', clickedElement);
           let newMainElements = mainElements.filter((item) => item !== clickedElement)
           setMainElements(newMainElements)
           setSelectedElements([clickedElement])
@@ -332,8 +331,12 @@ const Canvas = () => {
 
   // code to hit detection on editing points and re-sizing the element if it's not then add selected elements on mainElements array and reset all resizing points
 
+  const isGrabbedRef = useRef(false)
   const isReSizingRef = useRef(false)
   const clickedPointRef = useRef({})
+  const offsetXRef = useRef(0)
+  const offsetYRef = useRef(0)
+
   useEffect(() => {
     const canvas = topCanvasRef.current;
     const ctx = canvas.getContext('2d')
@@ -346,6 +349,17 @@ const Canvas = () => {
       // Mouse coordinates relative to canvas
       const mouseX = event.clientX - rect.left;
       const mouseY = event.clientY - rect.top;
+      // maneging offset for grab and drag element
+      if (selectedElements.length > 0 && selectedElements[0].elementType === 'rectangle') {
+        offsetXRef.current = mouseX - selectedElements[0].width
+        offsetYRef.current = mouseY - selectedElements[0].height
+      } else if (selectedElements.length > 0 && selectedElements[0].elementType === 'circle') {
+        offsetXRef.current = mouseX - selectedElements[0].x
+        offsetYRef.current = mouseY - selectedElements[0].y
+      } else if (selectedElements.length > 0 && selectedElements[0].elementType === 'text') {
+        offsetXRef.current = mouseX - selectedElements[0].screenX
+        offsetYRef.current = mouseY - selectedElements[0].screenY
+      }
 
       // checking if the user clicked on the selection points
       clickedPointRef.current = resizingPoints.find((point) => {
@@ -363,10 +377,9 @@ const Canvas = () => {
       const isClickedOnSelectedLine = selectedElements.length > 0 && (selectedElements[0].elementType === 'line' || selectedElements[0].elementType === 'arrow') ? isPointInPolygon(selectedElements[0].polygon, mouseX, mouseY) : false;
 
       if (clickedPointRef.current) {
-        console.log('point clicked')
         isReSizingRef.current = true
       } else if (clickedInsideBoundary) {
-        null;
+        isGrabbedRef.current = true
       } else if (isClickedOnSelectedLine) {
         null;
       } else {
@@ -378,90 +391,124 @@ const Canvas = () => {
 
     const reSizeTheSelectedElement = (event) => {
       // Mouse coordinates relative to canvas
+      const minMargin = 20
       const mouseX = event.clientX - rect.left;
       const mouseY = event.clientY - rect.top;
       let newArr = selectedElements[0]
 
-      if (isReSizingRef.current) {
-        selectedElements.forEach((item) => {
-          console.log(clickedPointRef.current)
+
+      if (selectedElements.length < 1 && !isDraggingRef.current && !isGrabbedRef.current) return;
+
+      selectedElements.forEach((item) => {
+        if (isReSizingRef.current) {
+          // re-sizing element according to the re-sizing points
           switch (item.elementType) {
             case 'rectangle':
               switch (clickedPointRef.current.name) {
                 case 'topLeft':
-                  // tLRef.current.x = mouseX
-                  // tLRef.current.y = mouseY
-                  // newArr.height = (bLRef.current.y - tLRef.current.y) - boundaryDiff * 2
-                  // updateing resizing points
-                  // top left
-                  newArr.x = mouseX + boundaryDiff
-                  newArr.y = mouseY + boundaryDiff
-                  newArr.width = (tRRef.current.x - tLRef.current.x) - boundaryDiff
-                  newArr.height = (bLRef.current.y - tLRef.current.y) - boundaryDiff
-                  console.log(newArr.width, newArr.height)
-                  // top right
-                  tRRef.current.x = mouseX + selectedElements[0].width + boundaryDiff * 2
-                  tRRef.current.y = mouseY + selectedElements[0].width + boundaryDiff * 2
-                  // bottom left
-                  bLRef.current.x = mouseX
-                  bLRef.current.y = mouseY + selectedElements[0].height + boundaryDiff * 2
-                  // bottom rught
-                  bRRef.current.x = tRRef.current.x
-                  bRRef.current.y = bLRef.current.y
+                  if (mouseX + minMargin > bRRef.current.x || mouseY + minMargin > bRRef.current.y) return;
+
+                  newArr.width += newArr.x - mouseX;
+                  newArr.height += newArr.y - mouseY;
+                  newArr.x = mouseX;
+                  newArr.y = mouseY;
 
                   setSelectedElements([newArr])
                   break;
                 case 'topRight':
+                  if (mouseX - minMargin < tLRef.current.x || mouseY + minMargin > bLRef.current.y) return;
+
+                  newArr.width = mouseX - newArr.x;
+                  newArr.height += newArr.y - mouseY;
+                  newArr.y = mouseY;
+                  setSelectedElements([newArr])
                   break;
                 case 'bottomLeft':
+                  if (mouseX + minMargin > tRRef.current.x || mouseY - minMargin < tLRef.current.y) return;
+
+                  newArr.width += newArr.x - mouseX;
+                  newArr.x = mouseX;
+                  newArr.height = mouseY - newArr.y;
+                  setSelectedElements([newArr])
                   break;
                 case 'bottomRight':
+                  if (mouseX - minMargin < tLRef.current.x || mouseY - minMargin < tRRef.current.y) return;
+
+                  newArr.width = mouseX - newArr.x;
+                  newArr.height = mouseY - newArr.y;
+                  setSelectedElements([newArr])
                   break;
               }
               break;
             case 'circle':
-              switch (clickedPointRef.current.name) {
-                case 'topLeft':
-                  break;
-                case 'topRight':
-                  break;
-                case 'bottomLeft':
-                  break;
-                case 'bottomRight':
-                  break;
-              }
+              const dx = mouseX - item.x;
+              const dy = mouseY - item.y;
+              item.radius = Math.sqrt(dx * dx + dy * dy);
+              setSelectedElements([item])
               break;
             case 'text':
-              switch (clickedPointRef.current.name) {
-                case 'topLeft':
-                  break;
-                case 'topRight':
-                  break;
-                case 'bottomLeft':
-                  break;
-                case 'bottomRight':
-                  break;
-              }
+              const newFontSize = Math.max(20, mouseY - item.screenY);
+              item.fontSize = newFontSize;
+              setSelectedElements([item])
               break;
             case 'arrow':
             case 'line':
+              let tolerance = 10
+
+              // Calculate the selection area around the line
+              const angle = Math.atan2(item.endY - item.startY, item.endX - item.startX);
+
+              // Offset vectors perpendicular to the line
+              const offsetX = Math.sin(angle) * tolerance;
+              const offsetY = -Math.cos(angle) * tolerance;
+
+              // Define polygon points (parallelogram around line)
+              const p1 = { x: item.startX + offsetX, y: item.startY + offsetY };
+              const p2 = { x: item.endX + offsetX, y: item.endY + offsetY };
+              const p3 = { x: item.endX - offsetX, y: item.endY - offsetY };
+              const p4 = { x: item.startX - offsetX, y: item.startY - offsetY };
+              item.polygon = [p1, p2, p3, p4]
+
               switch (clickedPointRef.current.name) {
                 case 'lineStart':
+                  item.startX = mouseX
+                  item.startY = mouseY
+                  setSelectedElements([item])
                   break;
                 case 'lineEnd':
+                  item.endX = mouseX
+                  item.endY = mouseY
+                  setSelectedElements([item])
                   break;
               }
               break;
-
             default:
               break;
           }
-        })
-      }
+        } else if (isGrabbedRef.current) {
+          // grab and re-place the element
+          switch (item.elementType) {
+            case 'rectangle':
+            case 'circle':
+              item.x = mouseX - offsetXRef.current
+              item.y = mouseY - offsetYRef.current
+              setSelectedElements([item])
+              break;
+            case 'text':
+              item.screenX = mouseX - offsetXRef.current
+              item.screenY = mouseY - offsetYRef.current
+              setSelectedElements([item])
+              break;
+            default:
+              break;
+          }
+        }
+      })
     }
 
     const handleResizingMouseUp = () => {
       isReSizingRef.current = false
+      isGrabbedRef.current = false
     }
     canvas.addEventListener('mousedown', handleResizingPointClick)
     canvas.addEventListener('mousemove', reSizeTheSelectedElement)
@@ -473,12 +520,6 @@ const Canvas = () => {
     }
   }, [selectedElements, tLRef, tRRef, bRRef, bLRef, lStart, lEnd])
 
-  useEffect(() => {
-    // console.log('main elements')
-    // console.log(mainElements)
-    console.log('selected elements')
-    console.log(selectedElements)
-  }, [selectedElements, mainElements])
 
   return (
     <div className={style.canvasHolderDiv} id='canvasHolderDiv'>

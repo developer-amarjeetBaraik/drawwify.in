@@ -1,0 +1,24 @@
+# Node.js
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# Logs
+logs
+*.log
+*.log.*
+debug.log*
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Environment variables
+.env
+*.env
+*.env.*
+
+# System files
+.DS_Store

@@ -20,6 +20,9 @@
     height: var(--toolbar-icon-height);
     color: var(--text-color);
     background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: none;
     align-content: center;
     cursor: pointer;

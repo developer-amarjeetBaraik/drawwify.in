@@ -11,7 +11,6 @@ export const drawCanvasContext = createContext({
   bottomCanvasRef: null,
   middleCanvasRef: null,
   topCanvasRef: null,
-  canFireStoreItemFromSelectedElementsToMainElements: false,
   isTextEditing: false,
   storeItemFromSelectedElementsToMainElements: () => { },
   drawSelectionArea: () => { },
@@ -125,6 +124,32 @@ const CanvasDrowStore = ({ children }) => {
     lEnd.current = { name: 'lineEnd', x: null, y: null }
   }
 
+  // Fn- updating the selection polygon of line and arrow
+  useEffect(() => {
+    if (selectedElements.elementType === 'line' || selectedElements.elementType === 'arrow') {
+      let tolerance = 10
+      let startX = selectedElements[0].startX
+      let startY = selectedElements[0].startY
+      let endX = selectedElements[0].endX
+      let endY = selectedElements[0].endY
+
+      // Calculate the selection area around the line
+      const angle = Math.atan2(endY - startY, endX - startX);
+
+      // Offset vectors perpendicular to the line
+      const offsetX = Math.sin(angle) * tolerance;
+      const offsetY = -Math.cos(angle) * tolerance;
+
+      // Define polygon points (parallelogram around line)
+      const p1 = { x: startX + offsetX, y: startY + offsetY };
+      const p2 = { x: endX + offsetX, y: endY + offsetY };
+      const p3 = { x: endX - offsetX, y: endY - offsetY };
+      const p4 = { x: startX - offsetX, y: startY - offsetY };
+      selectedElements.polygon = [p1, p2, p3, p4]
+      setSelectedElements(selectedElements)
+    }
+  }, [selectedElements])
+
   // Fn - draw selection boundry
   const drawSelectionBoundary = ({ type, sX, sY, sWidth, sHeight, startX, startY, endX, endY }) => {
     const ctx = topCanvasRef.current.getContext('2d')
@@ -213,7 +238,6 @@ const CanvasDrowStore = ({ children }) => {
   const drawRectangle = ({ isSelectedItem = false, isNewElement = false, canvasRef, x, y, width, height, strokeColor, fillColor = 'transparent', strokeWidth = 1.5, borderRadius = 0, }) => {
     const ctx = canvasRef.current.getContext('2d')
     ctx.save();
-    console.log('calling')
 
     if (isNewElement) {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
@@ -281,6 +305,7 @@ const CanvasDrowStore = ({ children }) => {
     const angle = Math.atan2(endY - startY, endX - startX);
 
     if (isNewElement) {
+
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
     }
 
@@ -375,8 +400,6 @@ const CanvasDrowStore = ({ children }) => {
 
   // section- storeing and managing the items in arrays
 
-  const [canFireStoreItemFromSelectedElementsToMainElements, setCanFireStoreItemFromSelectedElementsToMainElements] = useState(false)
-
   // storeing new item in selected elements array
   const addItemInSelectedElementsArray = (arrgs) => {
     setSelectedElements([arrgs])
@@ -448,7 +471,6 @@ const CanvasDrowStore = ({ children }) => {
       delete selectedElements[0].isSelectedItem
       setMainElements([...mainElements, ...selectedElements])
       setSelectedElements([])
-      setCanFireStoreItemFromSelectedElementsToMainElements(false)
     }
   }
 
@@ -522,9 +544,6 @@ const CanvasDrowStore = ({ children }) => {
     }
     setDrawSelectedElementsArr(() => drawSelectedElementsArrRef.current)
     drawSelectedElementsArrRef.current()
-    if (selectedElements.length > 0) {
-      setCanFireStoreItemFromSelectedElementsToMainElements(true)
-    }
   }, [selectedElements])
 
 
@@ -612,7 +631,7 @@ const CanvasDrowStore = ({ children }) => {
 
   return (
     <>
-      <drawCanvasContext.Provider value={{ mainElements, setMainElements, selectedElements, setSelectedElements, topCanvasRef, middleCanvasRef, bottomCanvasRef, isTextEditing, canFireStoreItemFromSelectedElementsToMainElements, storeItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints }}>
+      <drawCanvasContext.Provider value={{ mainElements, setMainElements, selectedElements, setSelectedElements, topCanvasRef, middleCanvasRef, bottomCanvasRef, isTextEditing,storeItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints }}>
         {children}
       </drawCanvasContext.Provider>
     </>

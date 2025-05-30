@@ -1,5 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
+/* Set box-sizing globally */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* @tailwind base;
+@tailwind components; */
+@tailwind utilities;
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #6366f1;
+  --color-primaryLight: #8b5cf6;
+  --color-accent: #06b6d4;
+  --color-accentLight: #0ea5e9;
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-glass: rgba(255, 255, 255, 0.1);
+  --color-glassBorder: rgba(255, 255, 255, 0.2);
+}
+
 * {
   margin: 0;
   padding: 0;
