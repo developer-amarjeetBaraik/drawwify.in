@@ -1,4 +1,5 @@
 import ServerRequestStore from '../store/ServerRequestStore'
+import UserAuthStore from '../store/UserAuthStore'
 import './App.css'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -8,11 +9,7 @@ function App() {
 
   return (
     <>
-      <ServerRequestStore>
-        <Home />
-        <Login />
-        <Workspace />
-      </ServerRequestStore>
+
     </>
   )
 }

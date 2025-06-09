@@ -1,7 +1,9 @@
 import React, { createContext, use, useContext, useEffect, useRef, useState } from 'react'
+import { v4 as uuid } from 'uuid'
 // import Pencil from '../src/components/canvas toolbar supportive mainElements/toolbar supporter tools/Pencil';
 import { toolbarComponentsValueContext } from './CanvasToolbarStore';
 import { sidebarSelectedBtnContext } from './CanvasSidebarStore';
+import { workspaceElementServerContext } from './WorkspaceElementServerStore';
 
 export const drawCanvasContext = createContext({
   mainElements: [],
@@ -35,12 +37,16 @@ const CanvasDrowStore = ({ children }) => {
   const middleCanvasRef = useRef(null)
   const bottomCanvasRef = useRef(null)
 
-  // { elementType: 'arrow', startX: 250, startY: 300, endX: 600, endY: 150, strokeColor: null }, { elementType: 'line', startX: 280, startY: 170, endX: 480, endY: 159, strokeColor: 'blue' },
+  // { elementType: 'rectangle', x: 500, y: 200, width: 500, height: 200, strokeColor: 'gray', fillColor: null, strokeWidth: 1.5, borderRadius: 10 }, { elementType: 'circle', x: 800, y: 190, radius: 90, strokeColor: 'pink', strokeWidth: 3 }, { elementType: 'text', text: 'Amarjeet', fontSize: 20, fontStyle: 'Arial', screenX: 1100, screenY: 250, textColor: 'white' }, { elementType: 'text', text: 'Amarjeet', fontSize: 20, fontStyle: 'Arial', screenX: 950, screenY: 160, textColor: 'white' }
+
+  // context form workspaceElementServerStore
+  const { createNewElementOnServer } = useContext(workspaceElementServerContext)
+
 
   // Section- storing the state of all mainElements present on canvas
 
   //mainElements array
-  const [mainElements, setMainElements] = useState([{ elementType: 'rectangle', x: 500, y: 200, width: 500, height: 200, strokeColor: 'blue', fillColor: 'yellow', strokeWidth: 1.5, borderRadius: 10 }, { elementType: 'circle', x: 800, y: 190, radius: 90, strokeColor: 'pink', strokeWidth: 3 }, { elementType: 'text', text: 'Amarjeet', fontSize: 20, fontStyle: 'Arial', screenX: 1100, screenY: 250, textColor: 'white' }, { elementType: 'text', text: 'Amarjeet', fontSize: 20, fontStyle: 'Arial', screenX: 950, screenY: 160, textColor: 'white' }])
+  const [mainElements, setMainElements] = useState([])
 
   //selectedElements array
   const [selectedElements, setSelectedElements] = useState([])
@@ -60,17 +66,11 @@ const CanvasDrowStore = ({ children }) => {
   const drawNewItemRef = useRef(() => { })
   const [drawNewItem, setDrawNewItem] = useState(() => () => { })
 
-  // this function add new element on seclectedElements array or elements array
-  const updateElementsAndSelctedElementsRef = useRef(() => { })
-  const [updateElementsAndSelctedElements, setUpdateElementsAndSelctedElements] = useState(() => () => { })
-
   // section- helper states
 
   // this state help to know if the text in editing or not on canvas right now
   const [isTextEditing, setIsTextEditing] = useState(false)
 
-  // re-sizing points state
-  const [resizingPoints, setResizingPoints] = useState([])
 
   const tLRef = useRef({ name: 'topLeft', x: null, y: null })
   const tRRef = useRef({ name: 'topRight', x: null, y: null })
@@ -82,8 +82,9 @@ const CanvasDrowStore = ({ children }) => {
 
   // Section- maneging the states of toolbar values
 
-  const { sidebarSelectedBtn, changeSidebarSelectedBtn } = useContext(sidebarSelectedBtnContext)
+  const { sidebarSelectedBtn } = useContext(sidebarSelectedBtnContext)
 
+  // context form toolbar
   const { currPastelColor, currBoldColor, currOutlineColor, currFontSize, currLineType, currFontStyle, currArrowHeadDir, currDashLine, currEraserPointerSize, currPencilPointerSize } = useContext(toolbarComponentsValueContext)
 
   //storing the state into refs so that it's latest state can be used inside the function
@@ -274,7 +275,7 @@ const CanvasDrowStore = ({ children }) => {
   }
 
   // Fn- Draw circle
-  const drawCircle = ({ isSelectedItem = false, isNewElement = false, canvasRef, x, y, radius, strokeColor = 'gray', fillColor = 'transparent', strokeWidth = 1.5 }) => {
+  const drawCircle = ({ isSelectedItem = false, isNewElement = false, canvasRef, x, y, radius, strokeColor = 'gray', fillColor, strokeWidth = 1.5 }) => {
     const ctx = canvasRef.current.getContext('2d')
     if (isNewElement) {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
@@ -288,7 +289,7 @@ const CanvasDrowStore = ({ children }) => {
       drawSelectionBoundary({ type: 'circle', sX, sY, sWidth, sHeight })
     }
 
-    ctx.fillStyle = fillColor
+    ctx.fillStyle = fillColor === null ? 'transparent' : fillColor
     ctx.strokeStyle = strokeColor
     ctx.strokeWidth = strokeWidth
     ctx.beginPath()
@@ -402,7 +403,24 @@ const CanvasDrowStore = ({ children }) => {
 
   // storeing new item in selected elements array
   const addItemInSelectedElementsArray = (arrgs) => {
+    const tempId = `temp-${uuid()}`
+    arrgs.id = tempId
+    arrgs.savedStatus = 'pending'
     setSelectedElements([arrgs])
+    // save new element in server database
+    createNewElementOnServer(arrgs, (res, error) => {
+      if (error) {
+        setSelectedElements(prev => prev.map(el =>
+          el.id === tempId ? { ...el, savedStatus: 'faild' } : el
+        ))
+        console.log(`Element saving failed: ${res}`)
+      } else {
+        console.log('Element added sucessfully on server')
+        setSelectedElements(prev => prev.map(el => (
+          el.id === tempId ? { ...el, id: res.id, type: res.type, savedStatus: 'saved' } : el
+        )))
+      }
+    })
   }
 
   // parse the values and store send them to store in selcted elements array
@@ -414,6 +432,7 @@ const CanvasDrowStore = ({ children }) => {
 
     if (type === 'rectangle') {
       addItemInSelectedElementsArray({ elementType: type, x: startX, y: startY, height: endY - startY, width: endX - startX, strokeColor, borderRadius: 10, fillColor })
+
     } else if (type === 'circle') {
       let centerX = (startX + endX) / 2
       let centerY = (startY + endY) / 2
@@ -507,6 +526,7 @@ const CanvasDrowStore = ({ children }) => {
     'handDraw': pencilDraw,
     'text': drawText,
   }
+
 
   // draw all items from mainElements
   useEffect(() => {
@@ -629,9 +649,10 @@ const CanvasDrowStore = ({ children }) => {
     setDrawNewItem(() => drawNewItemRef.current)
   }, [currPastelColor, currBoldColor, currOutlineColor])
 
+
   return (
     <>
-      <drawCanvasContext.Provider value={{ mainElements, setMainElements, selectedElements, setSelectedElements, topCanvasRef, middleCanvasRef, bottomCanvasRef, isTextEditing,storeItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints }}>
+      <drawCanvasContext.Provider value={{ mainElements, setMainElements, selectedElements, setSelectedElements, topCanvasRef, middleCanvasRef, bottomCanvasRef, isTextEditing, storeItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints }}>
         {children}
       </drawCanvasContext.Provider>
     </>

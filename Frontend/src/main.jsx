@@ -6,6 +6,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import Workspace from "./pages/Workspace";
 import Login from "./pages/Login";
+import UserAuthStore from "../store/UserAuthStore";
+import Dashboard from "./pages/Dashboard";
+import WorkspaceServerStore from "../store/WorkspaceServerStore";
 
 const router = createBrowserRouter([
   {
@@ -13,11 +16,16 @@ const router = createBrowserRouter([
     element: <Home />
   },
   {
-    path: '/workspace',
-    element: <Workspace />
-  }, {
+    path: `/workspace/:slug`,
+    element: <WorkspaceServerStore><Workspace /></WorkspaceServerStore>
+  },
+  {
     path: '/auth/login',
     element: <Login />
+  },
+  {
+    path: '/dashboard',
+    element: <WorkspaceServerStore> <Dashboard /></WorkspaceServerStore>
   }
 ])
 
@@ -29,7 +37,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       authorizationParams={{
         redirect_uri: window.location.origin
       }}>
-      <RouterProvider router={router} />
+      <UserAuthStore>
+        <RouterProvider router={router} />
+      </UserAuthStore>
     </Auth0Provider>
   </React.StrictMode>
 );

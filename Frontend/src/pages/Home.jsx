@@ -7,24 +7,13 @@ import HeroSection from '../components/HeroSection';
 import FeaturesSection from '../components/FeaturesSection';
 import CallToActionSection from '../components/CallToActionSection';
 import Footer from '../components/Footer';
+import DeveloperSays from '../components/DeveloperSays';
+import LoadingSkeleton from '../utils/LoadingSkeleton';
+
 
 const Home = () => {
-  
-  // const { isLoading, isAuthenticated, user } = useAuth0()
-  
-  // Color variables - easily customizable
-  const colors = {
-    primary: '#6366f1', // indigo-500
-    primaryLight: '#8b5cf6', // violet-500
-    accent: '#06b6d4', // cyan-500
-    accentLight: '#0ea5e9', // sky-500
-    background: '#0f172a', // slate-900
-    surface: '#1e293b', // slate-800
-    glass: 'rgba(255, 255, 255, 0.1)',
-    glassBorder: 'rgba(255, 255, 255, 0.2)',
-  };
+  document.title = 'Drawwify'
 
-  const [scrolled, setScrolled] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -32,41 +21,21 @@ const Home = () => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
 
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleScroll);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  // if (isLoading) {
-  //   return <h3>Loading...</h3>
-  // }
-
   return (
-    // <div>
-    //   <Navbar />
-    //   {isAuthenticated ? <>
-    //     {console.log(user)}
-    //     <h3>Hello {user.given_name}</h3>
-    //     <img src={user.picture} alt="Profile image" />
-    //   </> : <>
-    //     <h3>User unauthenticated</h3>
-    //   </>}
-
-    // </div>
-    <div className="min-h-screen text-white overflow-hidden relative" style={{ backgroundColor: colors.background }}>
+    <div className="min-h-screen text-white bg-background">
       {/* Animated Background Spheres */}
       <BackgroundSpheres mousePosition={mousePosition} />
 
       {/* Navigation */}
-      <Navbar scrolled={scrolled} />
+      <Navbar />
 
       {/* Hero Section */}
       <HeroSection />
@@ -76,6 +45,9 @@ const Home = () => {
 
       {/* CTA Section */}
       <CallToActionSection />
+
+      {/* Developer says */}
+      <DeveloperSays />
 
       {/* Footer */}
       <Footer />

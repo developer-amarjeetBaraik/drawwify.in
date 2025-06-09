@@ -1,5 +1,3 @@
-import React from 'react'
-import style from './Workspace.module.css'
 import Canvas from '../components/Canvas'
 import CanvasNavbar from '../components/CanvasNavbar'
 import CanvasNavbarStore from '../../store/CanvasNavbarStore'
@@ -8,11 +6,21 @@ import CanvasToolbar from '../components/CanvasToolbar'
 import CanvasToolbarStore from '../../store/CanvasToolbarStore'
 import CanvasSidebarStore from '../../store/CanvasSidebarStore'
 import CanvasDrowStore from '../../store/CanvasDrowStore'
-import ElementStore from '../../store/ElementStore'
-import CanvasAllMouseAndKeyEventsStore from '../../store/CanvasAllMouseAndKeyEventsStore'
+import { useParams } from 'react-router-dom'
+import { useContext, useEffect } from 'react'
+import { workspaceServerContext } from '../../store/WorkspaceServerStore'
+import WorkspaceElementServerStore from '../../store/WorkspaceElementServerStore'
 
 const Workspace = () => {
   document.title = "Workspace"
+  const { checkProjectOwnership } = useContext(workspaceServerContext)
+  const { slug } = useParams()
+
+  // check project ownership by project id 
+  useEffect(() => {
+    checkProjectOwnership(slug)
+  }, [slug])
+
   return (
     <>
       {/* Canvas navbar */}
@@ -20,8 +28,9 @@ const Workspace = () => {
         <CanvasNavbar />
       </CanvasNavbarStore>
 
-      {/* prodive context of elements and all */}
-      <ElementStore>
+      {/* server operation context only for workspace elements */}
+      <WorkspaceElementServerStore slug={slug}>
+
         {/* provide context of toolbar related things */}
         <CanvasToolbarStore>
           {/* provide context of sidebar related things */}
@@ -30,20 +39,17 @@ const Workspace = () => {
             {/* Canvas sidebar */}
             <CanvasSidebar />
 
-            {/* provide context of mouse events on canvas */}
-            <CanvasAllMouseAndKeyEventsStore>
-              {/* provide context to draw on canvas */}
-              <CanvasDrowStore>
-                {/* Canvas */}
-                <Canvas />
-              </CanvasDrowStore>
-            </CanvasAllMouseAndKeyEventsStore>
+            {/* provide context to draw on canvas */}
+            <CanvasDrowStore>
+              {/* Canvas */}
+              <Canvas slug={slug} />
+            </CanvasDrowStore>
 
             {/* Canvas toolbar */}
             <CanvasToolbar />
           </CanvasSidebarStore>
         </CanvasToolbarStore>
-      </ElementStore>
+      </WorkspaceElementServerStore>
     </>
   )
 }

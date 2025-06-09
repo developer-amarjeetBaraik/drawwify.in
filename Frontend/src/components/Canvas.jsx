@@ -2,13 +2,24 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import style from './Canvas.module.css'
 import { sidebarSelectedBtnContext } from '../../store/CanvasSidebarStore';
 import { drawCanvasContext } from '../../store/CanvasDrowStore';
+import { workspaceElementServerContext } from '../../store/WorkspaceElementServerStore';
 
 const Canvas = () => {
 
+  const { fetchAllElements } = useContext(workspaceElementServerContext)
 
   const { mainElements, setMainElements, selectedElements, setSelectedElements, bottomCanvasRef, middleCanvasRef, topCanvasRef, isTextEditing, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints, storeItemFromSelectedElementsToMainElements, initialDrawAllElements } = useContext(drawCanvasContext)
 
   const { sidebarSelectedBtn, changeSidebarSelectedBtn } = useContext(sidebarSelectedBtnContext)
+
+  // fetch all elements form server
+  useEffect(() => {
+    fetchAllElements((res, error) => {
+      if (res) {
+        setMainElements(res)
+      }
+    })
+  }, [])
 
   //code to manage canvas size
   useEffect(() => {
@@ -509,6 +520,9 @@ const Canvas = () => {
     const handleResizingMouseUp = () => {
       isReSizingRef.current = false
       isGrabbedRef.current = false
+
+      offsetXRef.current = null
+      offsetYRef.current = null
     }
     canvas.addEventListener('mousedown', handleResizingPointClick)
     canvas.addEventListener('mousemove', reSizeTheSelectedElement)
