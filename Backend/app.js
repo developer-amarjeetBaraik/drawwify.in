@@ -10,7 +10,7 @@ const app = express()
 const port = process.env.PORT
 
 const corsOptions = {
-    "origin": "http://localhost:5174",
+    "origin": `${process.env.FRONTEND_URL}`,
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
     "credentials": true,
     "preflightContinue": false,
