@@ -63,6 +63,7 @@ router.get('/google/callback', async (req, res) => {
                     httpOnly: true,
                     secure: true, // Set true for production
                     sameSite: 'Lax',
+                    domain: ".drawwify.in",
                     expires: tokenExpiry
                 }).json({token:token});
 
@@ -85,8 +86,8 @@ router.get('/google/callback', async (req, res) => {
                 httpOnly: true,
                 secure: true, // Set true for production
                 sameSite: 'Lax',
+                domain: ".drawwify.in",
                 expires: tokenExpiry
-
             })
             res.redirect(`${process.env.FRONTEND_URL}/dashboard`)
         }
@@ -109,6 +110,7 @@ router.post('/signup-via-email', async (req, res) => {
             httpOnly: true,
             secure: true, // Set true for production
             sameSite: 'Lax',
+            domain: ".drawwify.in",
             expires: tokenExpiry
         }).json({ message: 'Signup Successfully', redirect: '/dashboard', user: { id: isCreated.user_id, email: isCreated.email, first_name: isCreated.name } })
     } else {
@@ -125,6 +127,7 @@ router.post('/login-via-email', async (req, res) => {
             httpOnly: true,
             secure: true, // Set true for production
             sameSite: 'Lax',
+            domain: ".drawwify.in",
             expires: tokenExpiry
         }).json({ message: 'Login Successfully', redirect: '/dashboard', user: { id: isAuthenticUser.user_id, email: isAuthenticUser.email, first_name: isAuthenticUser.name } })
     } else if (isAuthenticUser === null) {

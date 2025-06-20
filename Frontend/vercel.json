@@ -3,7 +3,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://drawwify-in-backend.onrender.com/:path*"
+            "destination": "https://api.drawwify.in/:path*"
         },
         {
             "source": "/(.*)",
