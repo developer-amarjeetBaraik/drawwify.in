@@ -44,7 +44,7 @@ const UserAuthStore = ({ children }) => {
 
     // login via Google
     const loginViaGoogle = () => {
-        window.location.href = 'http://localhost:3000/auth/google';
+        window.location.href = 'https://drawwify-in-backend.onrender.com/auth/google';
     }
 
     const signupViaEmail = async (email, password, callback) => {
