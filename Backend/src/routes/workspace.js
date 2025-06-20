@@ -22,6 +22,7 @@ router.get('/all-projects', authenticate, async (req, res) => {
 })
 
 router.post('/create-project', authenticate, async (req, res) => {
+    console.log(req.user)
     const newProject = await createNewProject(req.user.id)
     if (!newProject) {
         res.status(500).send({ message: 'Internal Server Error' })
