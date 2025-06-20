@@ -43,9 +43,10 @@ export const createNewProject = async (user_id) => {
         // Save workspace
         await newProject.save({ session });
 
+        console.log(user_id)
+
         // Find and update user
         const userDoc = await user.findOne({ user_id: user_id }).session(session);
-        console.log(userDoc)
         if (!userDoc) throw new Error("User not found");
 
         userDoc.projects.push(newProject.workSpaceId);
