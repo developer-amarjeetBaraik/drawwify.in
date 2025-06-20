@@ -7,21 +7,21 @@ const EraserPointerThickness = () => {
     //provideing eraser size to the sidebar context to use these value somewhare
     const { changeSidebarSelectedBtn } = useContext(sidebarSelectedBtnContext)
     //provideing eraser size to the toolbar context to use these value somewhare
-    const { setCurrEraserPointerSize } = useContext(toolbarComponentsValueContext)
+    const { currEraserPointerSizeRef } = useContext(toolbarComponentsValueContext)
 
     useEffect(() => {
         const inputs = document.getElementsByName('eraserPointer')
         inputs.forEach((item) => {
             if (item.checked) {
                 changeSidebarSelectedBtn(item.value)
-                setCurrEraserPointerSize(item.value)
+                currEraserPointerSizeRef.current = item.value
             }
         })
     }, [])
 
     const handleClick = (event) => {
         changeSidebarSelectedBtn(event.currentTarget.value)
-        setCurrEraserPointerSize(event.currentTarget.value)
+        currEraserPointerSizeRef.current = event.currentTarget.value
     }
 
     return (

@@ -1,5 +1,4 @@
 import React from "react";
-import { Auth0Provider } from '@auth0/auth0-react';
 import ReactDOM from "react-dom/client";
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -9,11 +8,25 @@ import Login from "./pages/Login";
 import UserAuthStore from "../store/UserAuthStore";
 import Dashboard from "./pages/Dashboard";
 import WorkspaceServerStore from "../store/WorkspaceServerStore";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import PageNotFound from "./pages/PageNotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import Signup from "./pages/Signup";
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Home />
+  },
+  {
+    path: '/about',
+    element: <About />
+  },
+  {
+    path: '/contact',
+    element: <Contact />
   },
   {
     path: `/workspace/:slug`,
@@ -24,22 +37,31 @@ const router = createBrowserRouter([
     element: <Login />
   },
   {
+    path: '/auth/signup',
+    element: <Signup/>
+  },
+  {
     path: '/dashboard',
     element: <WorkspaceServerStore> <Dashboard /></WorkspaceServerStore>
+  },
+  {
+    path: '/privacy-policy',
+    element: <PrivacyPolicy/>
+  },
+  {
+    path: '/terms-and-conditions',
+    element: <TermsAndConditions/>
+  },
+  {
+    path: '*',
+    element: <PageNotFound />
   }
 ])
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Auth0Provider
-      domain="dev-u8wjfrj8lxtaapcu.us.auth0.com"
-      clientId="5pdnZvV95hKlwhiHGDa6ShHZ1HsTaWKw"
-      authorizationParams={{
-        redirect_uri: window.location.origin
-      }}>
-      <UserAuthStore>
-        <RouterProvider router={router} />
-      </UserAuthStore>
-    </Auth0Provider>
+    <UserAuthStore>
+      <RouterProvider router={router} />
+    </UserAuthStore>
   </React.StrictMode>
 );

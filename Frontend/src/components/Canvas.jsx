@@ -1,16 +1,37 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import style from './Canvas.module.css'
+import { Toaster } from 'sonner';
 import { sidebarSelectedBtnContext } from '../../store/CanvasSidebarStore';
 import { drawCanvasContext } from '../../store/CanvasDrowStore';
 import { workspaceElementServerContext } from '../../store/WorkspaceElementServerStore';
+import resizeCanvasFns from '../services/helperFunctions/resizeCanvasFns';
+import keyDownOnBodyFns from '../services/helperFunctions/keyDownOnBodyFns';
+import manageCursorIconOnCanvas from '../services/helperFunctions/manageCursorIconOnCanvas';
+import selectedElementIndicator from '../services/helperFunctions/selectedElementIndicator';
+import selectElementOnCanvas from '../services/helperFunctions/selectElementOnCanvas';
 
 const Canvas = () => {
 
   const { fetchAllElements } = useContext(workspaceElementServerContext)
 
-  const { mainElements, setMainElements, selectedElements, setSelectedElements, bottomCanvasRef, middleCanvasRef, topCanvasRef, isTextEditing, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints, storeItemFromSelectedElementsToMainElements, initialDrawAllElements } = useContext(drawCanvasContext)
+  const { mainElements, setMainElements, selectedElements, setSelectedElements, isElementEditing, setIsElementEditing, bottomCanvasRef, middleCanvasRef, topCanvasRef, isTextEditing, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints, storeItemFromSelectedElementsToMainElements, initialDrawAllElements } = useContext(drawCanvasContext)
 
   const { sidebarSelectedBtn, changeSidebarSelectedBtn } = useContext(sidebarSelectedBtnContext)
+
+  // resize the canvas
+  resizeCanvasFns({ topCanvasRef, middleCanvasRef, bottomCanvasRef })
+
+  // key down on body to select sidebar element tab by key
+  keyDownOnBodyFns({ sidebarSelectedBtn, changeSidebarSelectedBtn, isTextEditing })
+
+  // change the cursor icon on canvas according to the states
+  manageCursorIconOnCanvas({ sidebarSelectedBtn })
+
+  // draw selected element indicator on canvas while the element got select in sidebar tab like rectangle, circle
+  selectedElementIndicator({ topCanvasRef, sidebarSelectedBtn, selectedElements, drawSelectedElementIndicator })
+
+  // return the true or false weather the user clicked on element or not and help to select element on canvas
+  const { isPointInPolygon } = selectElementOnCanvas({ topCanvasRef, mainElements, setMainElements, selectedElements, setSelectedElements, sidebarSelectedBtn })
 
   // fetch all elements form server
   useEffect(() => {
@@ -20,136 +41,6 @@ const Canvas = () => {
       }
     })
   }, [])
-
-  //code to manage canvas size
-  useEffect(() => {
-    const mianCanvas = document.getElementById('myMainCanvas')
-    const middleCanvas = document.getElementById('middleCanvas')
-    const topCanvas = document.getElementById('topCanvas')
-
-    const resizeCanvas = () => {
-      // for main canvas
-      mianCanvas.width = document.documentElement.clientWidth;
-      mianCanvas.height = document.documentElement.clientHeight;
-      // for drawing canvas
-      middleCanvas.width = document.documentElement.clientWidth;
-      middleCanvas.height = document.documentElement.clientHeight;
-      // for execution canvas
-      topCanvas.width = document.documentElement.clientWidth;
-      topCanvas.height = document.documentElement.clientHeight;
-      // drawMainElementsArr()
-    }
-    resizeCanvas()
-    window.addEventListener("resize", resizeCanvas);
-  }, []);
-
-  //code to add key down evnet listener on body to handle sidebar selected button on key down
-  useEffect(() => {
-    const body = document.body
-
-    if (!isTextEditing) {
-      const handleKeyDownOnBody = (event) => {
-        if (['v', 'r', 'c', 'a', 'l', 'd', 't', '/'].includes(event.key) && sidebarSelectedBtn !== 'textBtn' && sidebarSelectedBtn !== 'textDraw') {
-          switch (event.key) {
-            case '/':
-              changeSidebarSelectedBtn('insertBtn')
-              break;
-            case 'v':
-              changeSidebarSelectedBtn('cursorBtn')
-              break;
-            case 'r':
-              changeSidebarSelectedBtn('squareBtn')
-              break;
-            case 'c':
-              changeSidebarSelectedBtn('circleBtn')
-              break;
-            case 'a':
-              changeSidebarSelectedBtn('arrowBtn')
-              break;
-            case 'l':
-              changeSidebarSelectedBtn('lineBtn')
-              break;
-            case 'd':
-              changeSidebarSelectedBtn('drawBtn')
-              break;
-            case 't':
-              changeSidebarSelectedBtn('textBtn')
-              break;
-          }
-        }
-      }
-
-      body.addEventListener('keydown', handleKeyDownOnBody)
-
-      return () => {
-        body.removeEventListener('keydown', handleKeyDownOnBody)
-      }
-    }
-
-
-  }, [sidebarSelectedBtn])
-
-
-  // code to manage cursor icon on canvas
-  useEffect(() => {
-    const canvasDiv = document.getElementById('canvasHolderDiv')
-    switch (sidebarSelectedBtn) {
-      default:
-        canvasDiv.style.cursor = 'var(--cursor-default-arrow-icon)'
-        break;
-      case "squareBtn":
-      case "squareDraw":
-        canvasDiv.style.cursor = 'var(--cursor-plus-icon)'
-        break;
-      case "circleBtn":
-      case "circleDraw":
-        canvasDiv.style.cursor = 'var(--cursor-plus-icon)'
-        break;
-      case "arrowBtn":
-      case "arrowDraw":
-        canvasDiv.style.cursor = 'var(--cursor-plus-icon)'
-        break;
-      case "lineBtn":
-      case "lineDraw":
-        canvasDiv.style.cursor = 'var(--cursor-plus-icon)'
-        break;
-      case "drawBtn":
-      case "pencilDraw":
-        canvasDiv.style.cursor = 'var(--cursor-draw-icon)'
-        break;
-      case "eraserSizeX":
-        canvasDiv.style.cursor = 'var(--cursor-eraser-icon-size-X)'
-        break;
-      case "eraserSizeM":
-        canvasDiv.style.cursor = 'var(--cursor-eraser-icon-size-M)'
-        break;
-      case "eraserSizeL":
-        canvasDiv.style.cursor = 'var(--cursor-eraser-icon-size-L)'
-        break;
-      case "eraserSizeXL":
-        canvasDiv.style.cursor = 'var(--cursor-eraser-icon-size-XL)'
-        break;
-      case "textBtn":
-      case "textDraw":
-        canvasDiv.style.cursor = 'var(--cursor-plus-icon)'
-        break;
-    }
-  }, [sidebarSelectedBtn])
-
-
-  //draw the selected element indicator with cursor
-  useEffect(() => {
-    const canvas = document.getElementById('topCanvas')
-    const handleMouseOver = (event) => {
-      drawSelectedElementIndicator(sidebarSelectedBtn, event.offsetX, event.offsetY)
-    }
-    if (sidebarSelectedBtn === 'squareBtn' || sidebarSelectedBtn === 'circleBtn') {
-      canvas.addEventListener('mousemove', handleMouseOver)
-    }
-    return () => {
-      canvas.removeEventListener('mousemove', handleMouseOver)
-    }
-  }, [sidebarSelectedBtn, selectedElements])
 
   //code to draw and add item on canvas
 
@@ -257,88 +148,6 @@ const Canvas = () => {
     }
   }, [sidebarSelectedBtn, selectedElements, startX, startY, prevPencilX, prevPencilY])
 
-  //code the select the element on canvas
-  function isPointInPolygon(polygon, x, y) {
-    let inside = false;
-    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-      const xi = polygon[i].x, yi = polygon[i].y;
-      const xj = polygon[j].x, yj = polygon[j].y;
-
-      const intersect = ((yi > y) !== (yj > y)) &&
-        (x < ((xj - xi) * (y - yi)) / (yj - yi) + xi);
-      if (intersect) inside = !inside;
-    }
-    return inside;
-  }
-
-  useEffect(() => {
-    const canvas = topCanvasRef.current;
-    const ctx = canvas.getContext('2d')
-    const rect = canvas.getBoundingClientRect();
-
-
-    // check if any element clicked
-    const handleCanvasClick = (event) => {
-      // Mouse coordinates relative to canvas
-      const mouseX = event.clientX - rect.left;
-      const mouseY = event.clientY - rect.top;
-
-      if (selectedElements.length < 1 && sidebarSelectedBtn === 'cursorBtn') {
-
-        const clickedElement = mainElements.find((el) => {
-          switch (el.elementType) {
-            case 'rectangle':
-              return (
-                mouseX >= el.x &&
-                mouseX <= el.x + el.width &&
-                mouseY >= el.y &&
-                mouseY <= el.y + el.height
-              );
-            case 'text':
-              const boundaryDiff = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--selected-item-boundry-difference'))
-              let sX = el.screenX - boundaryDiff
-              let sY = el.screenY - boundaryDiff * 2 - el.fontSize / 2
-              ctx.font = `${el.fontSize}px ${el.fontStyle ? el.fontStyle : 'Arial'}`
-              let width = ctx.measureText(el.text).width + boundaryDiff * 2
-              let height = el.fontSize + boundaryDiff
-
-              return (
-                mouseX >= sX &&
-                mouseX <= sX + width &&
-                mouseY >= sY &&
-                mouseY <= sY + height
-              );
-
-            case 'circle':
-              const dx = mouseX - el.x;
-              const dy = mouseY - el.y;
-              return dx * dx + dy * dy <= el.radius * el.radius;
-
-            case 'line':
-            case 'arrow':
-              return isPointInPolygon(el.polygon, mouseX, mouseY);
-
-            default:
-              return false;
-          }
-        });
-
-        if (clickedElement) {
-          let newMainElements = mainElements.filter((item) => item !== clickedElement)
-          setMainElements(newMainElements)
-          setSelectedElements([clickedElement])
-        }
-      }
-
-    };
-
-    canvas.addEventListener('click', handleCanvasClick)
-
-    return () => {
-      canvas.removeEventListener('click', handleCanvasClick)
-    }
-  }, [mainElements, selectedElements, sidebarSelectedBtn])
-
 
   // code to hit detection on editing points and re-sizing the element if it's not then add selected elements on mainElements array and reset all resizing points
 
@@ -362,8 +171,8 @@ const Canvas = () => {
       const mouseY = event.clientY - rect.top;
       // maneging offset for grab and drag element
       if (selectedElements.length > 0 && selectedElements[0].elementType === 'rectangle') {
-        offsetXRef.current = mouseX - selectedElements[0].width
-        offsetYRef.current = mouseY - selectedElements[0].height
+        offsetXRef.current = mouseX - selectedElements[0].x
+        offsetYRef.current = mouseY - selectedElements[0].y
       } else if (selectedElements.length > 0 && selectedElements[0].elementType === 'circle') {
         offsetXRef.current = mouseX - selectedElements[0].x
         offsetYRef.current = mouseY - selectedElements[0].y
@@ -412,6 +221,8 @@ const Canvas = () => {
 
       selectedElements.forEach((item) => {
         if (isReSizingRef.current) {
+          newArr.selectionSource = 'edit'
+          setIsElementEditing(true)
           // re-sizing element according to the re-sizing points
           switch (item.elementType) {
             case 'rectangle':
@@ -498,6 +309,8 @@ const Canvas = () => {
           }
         } else if (isGrabbedRef.current) {
           // grab and re-place the element
+          item.selectionSource = 'edit'
+          setIsElementEditing(true)
           switch (item.elementType) {
             case 'rectangle':
             case 'circle':
@@ -518,6 +331,7 @@ const Canvas = () => {
     }
 
     const handleResizingMouseUp = () => {
+      setIsElementEditing(false)
       isReSizingRef.current = false
       isGrabbedRef.current = false
 
@@ -545,6 +359,7 @@ const Canvas = () => {
 
       <canvas ref={topCanvasRef} className={`${style.Canvas} ${style.supportingCanvas}`} id={`topCanvas`}>
       </canvas>
+      <Toaster richColors theme='dark' />
     </div>
   )
 }

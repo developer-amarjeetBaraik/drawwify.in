@@ -1,10 +1,10 @@
 .sidebarDiv {
     position: fixed;
-    left: 20px;
-    top: 80px;
+    left: 50px;
+    top: 60px;
     display: flex;
-    flex-direction: column;
     gap: 15px;
+    /* transform: translateX(-50%); */
 }
 
 .firstSpan,
@@ -12,6 +12,8 @@
     padding: 2px;
     border: 1px solid var(--border-color);
     border-radius: 5px;
+    display: flex;
+    gap: 5px;
 }
 
 .sidebarButton {
@@ -40,12 +42,6 @@
 .activeBtn {
     border-radius: var(--border-radius);
     background-color: var(--fade-background-color);
-}
-
-.secondSpan {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
 }
 
 .character {

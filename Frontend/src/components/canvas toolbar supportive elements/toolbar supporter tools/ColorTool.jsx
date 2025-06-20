@@ -5,7 +5,7 @@ import { toolbarComponentsValueContext } from '../../../../store/CanvasToolbarSt
 
 const ColorTool = () => {
 
-    const {currPastelColor, currBoldColor, currOutlineColor}=useContext(toolbarComponentsValueContext)
+    const {currPastelColorRef, currBoldColorRef, currOutlineColorRef}=useContext(toolbarComponentsValueContext)
 
     const [selectedColorTab, setSelectedColorTab] = useState('Pastel')
 
@@ -23,7 +23,7 @@ const ColorTool = () => {
                     <label htmlFor="pastelColorPropertyTab" >
                         <span className={style.toolbarColorIcon}>
                             <span className={style.colorSpaceIcon}>
-                                <i className={style.colorEffectTab} id={style.pastelBtn} style={{backgroundColor:`${currPastelColor || 'gray'}`}}></i>
+                                <i className={style.colorEffectTab} id={style.pastelBtn} style={{backgroundColor:`${currPastelColorRef.current || 'gray'}`}}></i>
                             </span>
                         </span>
                     </label>
@@ -33,7 +33,7 @@ const ColorTool = () => {
                     <label htmlFor="boldColorPropertyTab" >
                         <span className={style.toolbarColorIcon}>
                             <span className={style.colorSpaceIcon}>
-                                <i className={style.colorEffectTab} id={style.boldBtn} style={{backgroundColor:`${currBoldColor || 'white'}`}}></i>
+                                <i className={style.colorEffectTab} id={style.boldBtn} style={{backgroundColor:`${currBoldColorRef.current || 'white'}`}}></i>
                             </span>
                         </span>
                     </label>
@@ -43,7 +43,7 @@ const ColorTool = () => {
                     <label htmlFor="outlinelColorPropertyTab" >
                         <span className={style.toolbarColorIcon}>
                             <span className={style.colorSpaceIcon}>
-                                <i className={style.colorEffectTab} id={style.outlineBtn} style={{border:`1px solid ${currOutlineColor}`}}></i>
+                                <i className={style.colorEffectTab} id={style.outlineBtn} style={{border:`1px solid ${currOutlineColorRef.current}`}}></i>
                             </span>
                         </span>
                     </label>

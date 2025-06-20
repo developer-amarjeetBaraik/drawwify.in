@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth0 } from '@auth0/auth0-react'
-import { Star, ArrowRight, Users, Zap, Shield } from 'lucide-react';
+import {Toaster} from 'sonner'
 import Navbar from '../components/Navbar'
 import BackgroundSpheres from '../components/BackgroundSpheres';
 import HeroSection from '../components/HeroSection';
@@ -51,6 +50,8 @@ const Home = () => {
 
       {/* Footer */}
       <Footer />
+
+      <Toaster/>
 
       <style jsx>{`
         @keyframes float {

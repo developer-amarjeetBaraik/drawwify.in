@@ -6,19 +6,21 @@ import CanvasToolbar from '../components/CanvasToolbar'
 import CanvasToolbarStore from '../../store/CanvasToolbarStore'
 import CanvasSidebarStore from '../../store/CanvasSidebarStore'
 import CanvasDrowStore from '../../store/CanvasDrowStore'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useContext, useEffect } from 'react'
 import { workspaceServerContext } from '../../store/WorkspaceServerStore'
 import WorkspaceElementServerStore from '../../store/WorkspaceElementServerStore'
+import { userAuthContext } from '../../store/UserAuthStore'
 
 const Workspace = () => {
   document.title = "Workspace"
-  const { checkProjectOwnership } = useContext(workspaceServerContext)
+  const { authenticated } = useContext(userAuthContext)
+  const { checkWorkspaceOwnership } = useContext(workspaceServerContext)
   const { slug } = useParams()
 
   // check project ownership by project id 
   useEffect(() => {
-    checkProjectOwnership(slug)
+    checkWorkspaceOwnership(slug)
   }, [slug])
 
   return (
@@ -38,15 +40,15 @@ const Workspace = () => {
 
             {/* Canvas sidebar */}
             <CanvasSidebar />
-
             {/* provide context to draw on canvas */}
             <CanvasDrowStore>
+
               {/* Canvas */}
               <Canvas slug={slug} />
-            </CanvasDrowStore>
 
-            {/* Canvas toolbar */}
-            <CanvasToolbar />
+              {/* Canvas toolbar */}
+              <CanvasToolbar />
+            </CanvasDrowStore>
           </CanvasSidebarStore>
         </CanvasToolbarStore>
       </WorkspaceElementServerStore>

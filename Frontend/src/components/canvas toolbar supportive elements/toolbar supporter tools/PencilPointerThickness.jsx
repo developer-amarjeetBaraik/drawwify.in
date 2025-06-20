@@ -5,19 +5,19 @@ import { toolbarComponentsValueContext } from '../../../../store/CanvasToolbarSt
 const PencilPointerThickness = () => {
 
     //provideing pencil size to the toolbar context to use these value somewhare
-    const { setCurrPencilPointerSize } = useContext(toolbarComponentsValueContext)
+    const { currPencilPointerSizeRef } = useContext(toolbarComponentsValueContext)
 
     useEffect(() => {
         const inputs = document.getElementsByName('pencilPointer')
         inputs.forEach((item) => {
             if (item.checked) {
-                setCurrPencilPointerSize(item.value)
+                currPencilPointerSizeRef.current = item.value
             }
         })
     }, [])
 
     const handleClick = (event) => {
-        setCurrPencilPointerSize(event.currentTarget.value)
+        currPencilPointerSizeRef.current = event.currentTarget.value
     }
 
     return (

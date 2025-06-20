@@ -3,6 +3,8 @@ import React, { createContext } from 'react'
 export const workspaceElementServerContext = createContext({
     fetchAllElements: () => { },
     createNewElementOnServer: () => { },
+    updateEditedElementOnServer: () => { },
+    deleteElementOnServer:()=>{},
 })
 
 const WorkspaceElementServerStore = ({ children, slug }) => {
@@ -48,7 +50,6 @@ const WorkspaceElementServerStore = ({ children, slug }) => {
             })
 
             res = await res.json()
-            console.log('server response')
             const newObj = {
                 id: res.elementId,
                 type: res.type,
@@ -63,9 +64,54 @@ const WorkspaceElementServerStore = ({ children, slug }) => {
 
     }
 
+    // update edited element on server
+    const updateEditedElementOnServer = async (editedElement, callback) => {
+        const elementId = editedElement.id
+        delete editedElement.selectionSource
+        delete editedElement.isSelectedItem
+        const { canvasRef, id, savedStatus, ...properties } = editedElement
+        try {
+            let res = await fetch('/api/workspace-element/upate-element-properties', {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ workspaceId: slug, elementId, properties })
+            })
+
+            res = await res.json()
+
+            callback(res, null)
+        } catch (error) {
+            callback(null, error)
+            console.log(error)
+        }
+    }
+
+    // delete element
+    const deleteElementOnServer = async (element, callback) => {
+        try {
+            let res = await fetch(`/api/workspace-element/delete-element?workspaceId=${slug}&elementId=${element.id}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            res = await res.json()
+            if(res.isDeleted){
+                callback(res, null)
+            }else{
+                callback(null, res)
+            }
+        } catch (error) {
+            callback(null, error)
+        }
+    }
+
 
     return (
-        <workspaceElementServerContext.Provider value={{ fetchAllElements, createNewElementOnServer }}>
+        <workspaceElementServerContext.Provider value={{ fetchAllElements, createNewElementOnServer, updateEditedElementOnServer,deleteElementOnServer }}>
             {children}
         </workspaceElementServerContext.Provider>
     )

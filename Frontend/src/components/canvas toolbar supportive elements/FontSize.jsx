@@ -9,14 +9,14 @@ const FontSize = () => {
     const fontSizeBtnValue = 'fontSizeTab'
 
     //code to provide the font size to store to use it's value elsewhere
-    const {currFontSize, setCurrFontSize}=useContext(toolbarComponentsValueContext)
+    const {currFontSizeRef}=useContext(toolbarComponentsValueContext)
 
     //code to see the which font size is selected
     const [fontSize, setFontSize] = useState('Small')
 
     //click event handler on buttons
     const handleBtnClick = (event) => {
-        setCurrFontSize(event.target.value)
+        currFontSizeRef.current = event.target.value
         setFontSize(event.target.innerHTML)
     }
 

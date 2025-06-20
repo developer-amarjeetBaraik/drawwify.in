@@ -1,4 +1,5 @@
 import React, { useContext} from 'react'
+import {NavLink} from 'react-router-dom'
 import style from './CanvasNavbar.module.css'
 import styleFromWorkSpace from '../pages/Workspace.module.css'
 import { navbarContext } from '../../store/CanvasNavbarStore'
@@ -20,7 +21,9 @@ const CanvasNavbar = () => {
   return (
     <div className={`${style.canvasNavbarDiv} ${styleFromWorkSpace.workspaceSupportingElement}`}>
       <div className={style.navbarLeft}>
+        <NavLink to={'/'}>
         <img src={logo} alt="" id={style.canvasNavbarLogo} />
+        </NavLink>
         <div id={style.canvasTital} suppressContentEditableWarning contentEditable onKeyDown={handleTitleKeyDown}>
           { canvasTitle }
         </div>
@@ -30,7 +33,9 @@ const CanvasNavbar = () => {
         </span>
       </div>
       <div className={style.navbarRight}>
-        <button>Something</button>
+        <button className='bg-accentLight p-2 border-[1px] border-white rounded-sm cursor-pointer'>
+          Download image
+        </button>
       </div>
     </div>
   )

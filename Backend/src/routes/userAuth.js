@@ -5,12 +5,15 @@ import { v4 as uuidv4 } from 'uuid'
 import jwt from 'jsonwebtoken'
 import authenticate from '../middlewares/authenticate.js'
 import user from '../models/user.js'
+import { loginViaEmail, signupViaEmail } from '../controllers/userAuthController.js'
+import { genAuthToken } from '../services/genAuthToken.js'
 
 const router = express.Router()
 
+const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000 * 15);
+
 router.get('/validate-me', authenticate, (req, res) => {
-    res.status(200)
-    res.send({ message: 'Authenticated', user: req.user })
+    res.status(200).send({ message: 'Authenticated', user: req.user })
 })
 
 router.get('/google', (req, res) => {
@@ -55,56 +58,38 @@ router.get('/google/callback', async (req, res) => {
                 // save new user in database
                 await newUser.save()
 
-                // create token for new user
-                const token = jwt.sign(
-                    {
-                        id: user_id,
-                        first_name: userInfo.data.given_name,
-                        last_name: userInfo.data.family_name,
-                        email: userInfo.data.email,
-                        picture: userInfo.data.picture,
-                    },
-                    process.env.JWT_SECRET
-                )
-
-                const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000 * 15);
+                const token = await genAuthToken(userInfo.data)
 
                 res.cookie('token', token, {
                     httpOnly: true,
-                    secure: false, // Set true for production
+                    secure: true, // Set true for production
                     sameSite: 'Lax',
                     expires: tokenExpiry
                 });
 
-                res.redirect(`${process.env.FRONTEND_URL}`);
+                res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
             } catch (error) {
                 console.log(error)
                 res.status(500)
                 res.send({ message: 'Internal server error' })
             }
         } else if (alreadyRagistered.email === userInfo.data.email) {
-            // create jwt token for exsisting user
-            const token = jwt.sign(
-                {
-                    id: alreadyRagistered.user_id,
-                    first_name: userInfo.data.given_name,
-                    last_name: userInfo.data.family_name,
-                    email: userInfo.data.email,
-                    picture: userInfo.data.picture,
-                },
-                process.env.JWT_SECRET
-            )
 
-            const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000 * 15);
+            const token = await genAuthToken({
+                id: alreadyRagistered.user_id,
+                first_name: userInfo.data.given_name,
+                email: userInfo.data.email,
+                picture: userInfo.data.picture,
+            })
 
             res.cookie('token', token, {
                 httpOnly: true,
-                secure: false, // Set true for production
+                secure: true, // Set true for production
                 sameSite: 'Lax',
                 expires: tokenExpiry
 
             })
-            res.redirect(process.env.FRONTEND_URL)
+            res.redirect(`${process.env.FRONTEND_URL}/dashboard`)
         }
 
 
@@ -112,6 +97,41 @@ router.get('/google/callback', async (req, res) => {
     } catch (error) {
         console.error('Google auth error:', error.message);
         res.status(500).send('Authentication failed');
+    }
+})
+
+router.post('/signup-via-email', async (req, res) => {
+    const { email, password } = req.body
+    const isCreated = await signupViaEmail(email, password)
+
+    if (isCreated) {
+        const token = await genAuthToken(isCreated)
+        res.status(200).cookie('token', token, {
+            httpOnly: true,
+            secure: true, // Set true for production
+            sameSite: 'Lax',
+            expires: tokenExpiry
+        }).json({ message: 'Signup Successfully', redirect: '/dashboard', user: { id: isCreated.user_id, email: isCreated.email, first_name: isCreated.name } })
+    } else {
+        res.status(401).json({ message: 'User already exsist or Someing went wrong' })
+    }
+})
+
+router.post('/login-via-email', async (req, res) => {
+    const { email, password } = req.body
+    const isAuthenticUser = await loginViaEmail(email, password)
+    if (isAuthenticUser) {
+        const token = await genAuthToken(isAuthenticUser)
+        res.status(200).cookie('token', token, {
+            httpOnly: true,
+            secure: true, // Set true for production
+            sameSite: 'Lax',
+            expires: tokenExpiry
+        }).json({ message: 'Login Successfully', redirect: '/dashboard', user: { id: isAuthenticUser.user_id, email: isAuthenticUser.email, first_name: isAuthenticUser.name } })
+    } else if (isAuthenticUser === null) {
+        res.status(404).json({ message: 'User not found. Signup first.' })
+    } else {
+        res.status(401).json({ message: "Incorrect password or email" })
     }
 })
 

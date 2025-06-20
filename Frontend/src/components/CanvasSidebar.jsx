@@ -10,7 +10,7 @@ const CanvasSidebar = () => {
     
     return (
         <div className={`${style.sidebarDiv} ${styleFromWorkSpace.workspaceSupportingElement}`}>
-            <span className={style.firstSpan}>
+            {/* <span className={style.firstSpan}>
                 <button value={'insert'} onClick={()=>changeSidebarSelectedBtn('insert')} className={`${style.sidebarButton} ${sidebarSelectedBtn === 'insert'?style.activeBtn:null}`}>
                     <span className={style.shape}>
                         <svg role="img" width="12" height="12" focusable="false" aria-hidden="true" viewBox="0 0 12 12" className=""><path fill="path" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" d="M6 1V6M6 11V6M6 6H11M6 6H1"></path></svg>
@@ -19,7 +19,7 @@ const CanvasSidebar = () => {
                         /
                     </span>
                 </button>
-            </span>
+            </span> */}
             <span className={style.secondSpan}>
                 <button value={'cursor'} onClick={()=>changeSidebarSelectedBtn('cursorBtn')} className={`${style.sidebarButton} ${sidebarSelectedBtn === 'cursorBtn'?style.activeBtn:null}`}>
                     <span className={style.shape}>

@@ -39,12 +39,13 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 cursor-pointer">
+          <NavLink to={'/'} className="flex items-center space-x-2 cursor-pointer">
             <img src={logoImage} alt="" className='w-16 cursor-pointer' />
-          </div>
+          </NavLink>
 
-          {/* Navigation Links */}
+          {/* Navigation tab */}
           <div className="flex items-center justify-end space-x-8 md:gap-20">
+          {/* Navigation links */}
             <div className="navLinks flex items-center gap-3 md:gap-20">
               {navItems.map((item) => (
                 <NavLink
@@ -72,14 +73,16 @@ const Navbar = () => {
                 {
                   authenticated ? <>
                     {/* profile button */}
-                    <div className='relative ml-2 w-10 h-10 rounded-[50%] cursor-pointer'>
-                      <img src={`${user.picture}`} alt="" className='w-full h-full rounded-[50%]' onClick={() => setProfileOpen(!profileOpen)} />
+                    <div className='relative w-10 h-10 rounded-[50%] cursor-pointer'>
+                      <span className='w-full h-full block bg-glass rounded-[50%] border-[1px] border-white text-center content-center text-2xl' onClick={() => setProfileOpen(!profileOpen)}>
+                      {(user.picture)?<img src={`${user.picture}`} alt=""   />:<p>{user.first_name?.charAt(0).toUpperCase()}</p>}
+                      </span>
                       {
                         profileOpen ? <>
-                          <div className='absolute -right-1 mt-1 p-2 rounded-sm w-30 min-h-20 flex flex-col text-[12px] overflow-hidden bg-glass backdrop-blur-md border'>
-                            <NavLink>{user.first_name}</NavLink>
-                            <NavLink>{user.email}</NavLink>
-                            <NavLink>is verified: {user.email_verified ? 'True' : 'False'}</NavLink>
+                          <div className='absolute -right-1 mt-1 p-2 rounded-sm w-[250px] min-h-30 flex flex-col text-[14px] overflow-hidden bg-glass backdrop-blur-md border'>
+                            <NavLink>{`User id: ${user.id}`}</NavLink>
+                            <NavLink>{`Name: ${user.first_name}`}</NavLink>
+                            <NavLink>{`Email: ${user.email}`}</NavLink>
                             <button className='bg-red-400' onClick={() => logout()}>Logout</button>
                           </div>
                         </> : null
@@ -88,7 +91,7 @@ const Navbar = () => {
                     </div>
                   </> : <>
                     {/* login and signup */}
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-4 ">
                       <NavLink to={'/auth/login'} className=" text-center text-gray-300 hover:text-white transition-colors duration-200 px-4 py-2">
                         Login
                       </NavLink>

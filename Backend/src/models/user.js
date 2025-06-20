@@ -1,11 +1,11 @@
 import mongoose from 'mongoose'
-import workspaceSchema from './workspaceModel.js'
 
 const userSchema = new mongoose.Schema({
     user_id: {
         type: String,
-        require: true,
-        unique: true
+        required: true,
+        unique: true,
+        index:true,
     },
     name: {
         type: String,
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
         type: String,
     },
     projects: {
-        type: [workspaceSchema.workSpaceId],
+        type: [String],
         require: true,
         default: []
     },

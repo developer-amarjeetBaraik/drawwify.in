@@ -7,7 +7,7 @@ const LineType = () => {
 
     const { selectedBtnName, changeSelectedBtnName } = useContext(toolbarBtnContext)
 
-    const {currLineType, setCurrLineType}=useContext(toolbarComponentsValueContext)
+    const {currLineTypeRef}=useContext(toolbarComponentsValueContext)
 
     const lineTypeBtnValue = 'lineTypeTab'
 
@@ -16,7 +16,7 @@ const LineType = () => {
 
     const handleBtnClick = (event) => {
         setSelectedLineType(event.currentTarget.value)
-        setCurrLineType(event.currentTarget.value) 
+        currLineTypeRef.current = event.currentTarget.value
     }
     
 

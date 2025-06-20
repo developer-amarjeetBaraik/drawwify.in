@@ -8,9 +8,9 @@ const Typography = () => {
     const { selectedBtnName, changeSelectedBtnName } = useContext(toolbarBtnContext)
 
     //code to provide it's value to the store to use it some where
-    const { currFontStyle, setCurrFontStyle } = useContext(toolbarComponentsValueContext)
+    const { currFontStyleRef } = useContext(toolbarComponentsValueContext)
     const handleBtnClick = (event) =>{
-        setCurrFontStyle(event.target.value)
+        currFontStyleRef.current = event.target.value
     }
 
     const typographyBtnValue = 'typographyTab'

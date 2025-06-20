@@ -3,18 +3,18 @@ import style from './ColorShades.module.css'
 import { toolbarComponentsValueContext } from '../../../../store/CanvasToolbarStore'
 
 const ColorShades = ({ selectedColorTab }) => {
-  const { currPastelColor, setCurrPatelColor, currBoldColor, setCurrBoldColor, currOutlineColor, setCurrOutlineColor } = useContext(toolbarComponentsValueContext)
+  const { currPastelColorRef, currBoldColorRef, currOutlineColorRef} = useContext(toolbarComponentsValueContext)
 
   const changePastelColor = (event) => {
-    setCurrPatelColor(getComputedStyle(document.documentElement).getPropertyValue(event.target.value))
-    setCurrBoldColor(null)
+    currPastelColorRef.current = getComputedStyle(document.documentElement).getPropertyValue(event.target.value)
+    currBoldColorRef.current = null
   }
   const changeBoldColor = (event) => {
-    setCurrBoldColor(getComputedStyle(document.documentElement).getPropertyValue(event.target.value))
-    setCurrPatelColor(null)
+    currBoldColorRef.current = getComputedStyle(document.documentElement).getPropertyValue(event.target.value)
+    currPastelColorRef.current = null
   }
   const changeOutlineColor = (event) => {
-    setCurrOutlineColor(getComputedStyle(document.documentElement).getPropertyValue(event.target.value))
+    currOutlineColorRef.current = getComputedStyle(document.documentElement).getPropertyValue(event.target.value)
   }
 
 

@@ -59,3 +59,34 @@ export const createNewProject = async (user_id) => {
         session.endSession();
     }
 };
+
+export const deleteProject = async (workSpaceId, createrId) => {
+    let isDeleted = null
+    // Start the session properly
+    const session = await mongoose.startSession();
+
+    try {
+        await session.startTransaction();
+
+        // delete workspace
+       const deletedItem = await WorkspaceModel.findOneAndDelete({ workSpaceId: workSpaceId }, { session })
+
+        // Find and update user
+        const updatedUser = await user.findOneAndUpdate({ user_id: createrId }, { $pull: { projects: workSpaceId } }, { projection: { _id: 0, projects: 1 }, new: true }).session(session);
+        if (!updatedUser) throw new Error("User not found");
+        
+        if(deletedItem && updatedUser){
+            isDeleted = true
+        }else{
+            isDeleted = false
+        }
+        await session.commitTransaction();
+    } catch (error) {
+        await session.abortTransaction();
+        console.error("Transaction failed:", error);
+        return isDeleted = false
+    } finally {
+        session.endSession();
+    }
+    return isDeleted
+};
