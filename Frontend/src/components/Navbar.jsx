@@ -45,7 +45,7 @@ const Navbar = () => {
 
           {/* Navigation tab */}
           <div className="flex items-center justify-end space-x-8 md:gap-20">
-          {/* Navigation links */}
+            {/* Navigation links */}
             <div className="navLinks flex items-center gap-3 md:gap-20">
               {navItems.map((item) => (
                 <NavLink
@@ -75,7 +75,7 @@ const Navbar = () => {
                     {/* profile button */}
                     <div className='relative w-10 h-10 rounded-[50%] cursor-pointer'>
                       <span className='w-full h-full block bg-glass rounded-[50%] border-[1px] border-white text-center content-center text-2xl' onClick={() => setProfileOpen(!profileOpen)}>
-                      {(user.picture)?<img src={`${user.picture}`} alt=""   />:<p>{user.first_name?.charAt(0).toUpperCase()}</p>}
+                        {(user.picture) ? <img src={`${user.picture}`} alt=""  className='w-full h-full rounded-[50%]' />:<p>{user.first_name?.charAt(0).toUpperCase()}</p>}
                       </span>
                       {
                         profileOpen ? <>

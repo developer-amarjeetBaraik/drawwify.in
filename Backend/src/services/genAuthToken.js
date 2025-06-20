@@ -4,10 +4,11 @@ import { v4 as uuid } from 'uuid'
 export const genAuthToken = async (userObj) => {
     const newUser_id = uuid()
     // create token for new user
+    console.log(userObj)
     const token = jwt.sign(
         {
             id: (userObj.user_id) ? userObj.user_id : newUser_id,
-            first_name: userObj.given_name ?? userObj.name,
+            first_name: userObj.first_name ?? userObj.name,
             email: userObj.email,
             picture: userObj?.picture,
             projects: userObj.projects,

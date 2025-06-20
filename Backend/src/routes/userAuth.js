@@ -40,7 +40,6 @@ router.get('/google/callback', async (req, res) => {
         })
 
         const alreadyRagistered = await user.findOne({ email: userInfo.data.email })
-        console.log(alreadyRagistered)
 
         if (alreadyRagistered === null) {
 
@@ -65,9 +64,9 @@ router.get('/google/callback', async (req, res) => {
                     secure: true, // Set true for production
                     sameSite: 'Lax',
                     expires: tokenExpiry
-                });
+                }).json({token:token});
 
-                res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+                // res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
             } catch (error) {
                 console.log(error)
                 res.status(500)
