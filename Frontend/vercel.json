@@ -4,6 +4,10 @@
         {
             "source": "/api/:path*",
             "destination": "https://drawwify-in-backend.onrender.com/:path*"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/"
         }
     ]
 }
