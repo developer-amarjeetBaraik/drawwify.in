@@ -138,6 +138,7 @@ router.post('/login-via-email', async (req, res) => {
 })
 
 router.get('/logout', (req, res) => {
+    console.log('res get to logout')
     res.clearCookie('token')
     res.redirect(`${process.env.FRONTEND_URL}/`)
 })

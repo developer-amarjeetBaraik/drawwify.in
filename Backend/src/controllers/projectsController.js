@@ -43,7 +43,7 @@ export const createNewProject = async (user_id) => {
         // Save workspace
         await newProject.save({ session });
 
-        console.log(user_id)
+        console.log(user)
 
         // Find and update user
         const userDoc = await user.findOne({ user_id: user_id }).session(session);

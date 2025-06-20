@@ -82,7 +82,7 @@ const Dashboard = () => {
                                 <p className='text-[12px] italic'>Auther</p>
                             </div>
                         </li>
-                        {workspaces.map((item) => (
+                        {workspaces?.map((item) => (
                             <div key={item.workSpaceId} className='relative flex'>
                                 <li key={item.workSpaceId} onClick={() => navigate(`/workspace/${item.workSpaceId}`)} className='px-2.5 w-full min-h-[70px] flex justify-between items-center flex-wrap bg-glass rounded-xl border border-glassBorder cursor-pointer'>
                                     <div>
@@ -110,7 +110,7 @@ const Dashboard = () => {
                 }
 
             </section>
-            <Toaster richColors theme='dark'/>
+            <Toaster richColors theme='dark' />
 
         </div>
     )
