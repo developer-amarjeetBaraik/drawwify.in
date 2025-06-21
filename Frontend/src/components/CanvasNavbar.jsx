@@ -1,20 +1,41 @@
-import React, { useContext} from 'react'
-import {NavLink} from 'react-router-dom'
+import React, { useContext } from 'react'
+import { NavLink } from 'react-router-dom'
 import style from './CanvasNavbar.module.css'
 import styleFromWorkSpace from '../pages/Workspace.module.css'
 import { navbarContext } from '../../store/CanvasNavbarStore'
 
 //importing images
 import logo from '../assets/your-board-logo.png'
+import { drawCanvasContext } from '../../store/CanvasDrowStore'
 
 const CanvasNavbar = () => {
 
-  const {canvasTitle, changeCanvasTitle} = useContext(navbarContext)
+  const { canvasTitle, changeCanvasTitle } = useContext(navbarContext)
+  const { bottomCanvasRef, storeItemFromSelectedElementsToMainElements } = useContext(drawCanvasContext)
 
-  const handleTitleKeyDown = (event) =>{
-    if(event.code === "Enter"){
+  const handleTitleKeyDown = (event) => {
+    if (event.code === "Enter") {
       event.preventDefault();
       changeCanvasTitle(event.target.innerHTML)
+    }
+  }
+
+  const downloadImage = (event) => {
+    if (!event.target.attributes.disabled) {
+      storeItemFromSelectedElementsToMainElements()
+      const canvas = bottomCanvasRef.current
+      const ctx = canvas.getContext('2d')
+      const imagedata = canvas.toDataURL("image/png")
+
+      // Create a temporary anchor to trigger download
+      const link = document.createElement("a");
+      link.href = imagedata;
+      link.download = `${canvasTitle}-drawwify.png`; // <-- Set your custom file name here
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      event.target.setAttribute('disabled', true)
+      event.target.style.cursor = 'not-allowed'
     }
   }
 
@@ -22,10 +43,10 @@ const CanvasNavbar = () => {
     <div className={`${style.canvasNavbarDiv} ${styleFromWorkSpace.workspaceSupportingElement}`}>
       <div className={style.navbarLeft}>
         <NavLink to={'/'}>
-        <img src={logo} alt="" id={style.canvasNavbarLogo} />
+          <img src={logo} alt="" id={style.canvasNavbarLogo} />
         </NavLink>
         <div id={style.canvasTital} suppressContentEditableWarning contentEditable onKeyDown={handleTitleKeyDown}>
-          { canvasTitle }
+          {canvasTitle}
         </div>
         {/* three dot svg icon */}
         <span>
@@ -33,9 +54,9 @@ const CanvasNavbar = () => {
         </span>
       </div>
       <div className={style.navbarRight}>
-        <button className='bg-accentLight p-2 border-[1px] border-white rounded-sm cursor-pointer'>
+        <a href='#' onClick={downloadImage} className='bg-accentLight p-2 border-[1px] border-white rounded-sm cursor-pointer'>
           Download image
-        </button>
+        </a>
       </div>
     </div>
   )

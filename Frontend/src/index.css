@@ -13,6 +13,10 @@
 
 @import "tailwindcss";
 
+.active {
+  @apply border-b-primary border-b-2 [&>span]:bg-transparent;
+}
+
 @theme {
   --color-primary: #6366f1;
   --color-primaryLight: #8b5cf6;

@@ -49,7 +49,7 @@ const HeroSection = () => {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <NavLink id='ctaButtonRef.current' ref={ctaButtonRef} onMouseMove={handleCtaButtonMousemove} onMouseLeave={handleCtaButtonMouseleave} className={`bg-linear-135 from-secondaryLight to-secondary text-white py-[1rem] px-[2rem] text-[1.1rem] rounded-[12px] inline-block font-semibold transition-all duration-2000 ease-[ease] relative overflow-hidden hover:transform -translate-y-[3px] shadow-[0_15px_30px_rgba(240,147,251,0.4)]`}
+                    <NavLink to={'/dashboard'} id='ctaButtonRef.current' ref={ctaButtonRef} onMouseMove={handleCtaButtonMousemove} onMouseLeave={handleCtaButtonMouseleave} className={`bg-linear-135 from-secondaryLight to-secondary text-white py-[1rem] px-[2rem] text-[1.1rem] rounded-[12px] inline-block font-semibold transition-all duration-2000 ease-[ease] relative overflow-hidden hover:transform -translate-y-[3px] shadow-[0_15px_30px_rgba(240,147,251,0.4)]`}
                     >
                         Try Now →
                     </NavLink>

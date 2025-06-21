@@ -39,7 +39,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
-          <NavLink to={'/'} className="flex items-center space-x-2 cursor-pointer">
+          <NavLink to={'/'} className="flex items-center space-x-2 cursor-pointer border-none">
             <img src={logoImage} alt="" className='w-16 cursor-pointer' />
           </NavLink>
 
@@ -51,7 +51,7 @@ const Navbar = () => {
                 <NavLink
                   key={item.name}
                   to={item.path}
-                  className={`${({ isActive }) => isActive ? 'border-b border-primary' : null} text-gray-300 hover:text-white transition-colors duration-200 relative group`}
+                  className={`text-gray-300 hover:text-white transition-colors duration-200 relative group`}
                 >
                   {item.name}
                   <span
@@ -60,7 +60,7 @@ const Navbar = () => {
                 </NavLink>
               ))}
 
-              {authenticated ? <NavLink to={'/dashboard'} className={`${({ isActive }) => isActive ? 'border-b border-primary' : null} text-gray-300 hover:text-white transition-colors duration-200 relative group`}>Dashboard
+              {authenticated ? <NavLink to={'/dashboard'} className={`text-gray-300 hover:text-white transition-colors duration-200 relative group`}>Dashboard
                 <span
                   className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full `}
                 />
@@ -73,17 +73,17 @@ const Navbar = () => {
                 {
                   authenticated ? <>
                     {/* profile button */}
-                    <div className='relative w-10 h-10 rounded-[50%] cursor-pointer'>
+                    <div className='relative ml-2 w-10 h-10 rounded-[50%] cursor-pointer md:ml-0'>
                       <span className='w-full h-full block bg-glass rounded-[50%] border-[1px] border-white text-center content-center text-2xl' onClick={() => setProfileOpen(!profileOpen)}>
                         {(user.picture) ? <img src={`${user.picture}`} alt=""  className='w-full h-full rounded-[50%]' />:<p>{user.first_name?.charAt(0).toUpperCase()}</p>}
                       </span>
                       {
                         profileOpen ? <>
-                          <div className='absolute -right-1 mt-1 p-2 rounded-sm w-[250px] min-h-30 flex flex-col text-[14px] overflow-hidden bg-glass backdrop-blur-md border'>
-                            <NavLink>{`User id: ${user.id}`}</NavLink>
-                            <NavLink>{`Name: ${user.first_name}`}</NavLink>
-                            <NavLink>{`Email: ${user.email}`}</NavLink>
-                            <button className='bg-red-400' onClick={() => logout()}>Logout</button>
+                          <div className='absolute -right-1 mt-1 p-2 rounded-sm w-[250px] min-h-30 flex flex-col gap-1 text-[14px] overflow-hidden bg-glass backdrop-blur-md border cursor-default'>
+                            <p>{`User id: ${user.id}`}</p>
+                            <p>{`Name: ${user.first_name}`}</p>
+                            <p>{`Email: ${user.email}`}</p>
+                            <button className='bg-red-400 cursor-pointer' onClick={() => logout()}>Logout</button>
                           </div>
                         </> : null
                       }
@@ -92,14 +92,14 @@ const Navbar = () => {
                   </> : <>
                     {/* login and signup */}
                     <div className="flex items-center space-x-4 ">
-                      <NavLink to={'/auth/login'} className=" text-center text-gray-300 hover:text-white transition-colors duration-200 px-4 py-2">
+                      <NavLink to={'/auth/login'} className="px-3 py-2 rounded-xl font-medium bg-linear-135 from-primary to-primaryLight transition-all duration-300 hover:scale-105 text-white">
                         Login
                       </NavLink>
-                      <NavLink
+                      {/* <NavLink
                         className="px-3 py-2 rounded-xl font-medium bg-linear-135 from-primary to-primaryLight transition-all duration-300 hover:scale-105 text-white"
                       >
                         Get Started
-                      </NavLink>
+                      </NavLink> */}
                     </div>
                   </>
                 }

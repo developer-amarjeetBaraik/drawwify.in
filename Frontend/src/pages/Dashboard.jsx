@@ -24,10 +24,17 @@ const shortBtn = [
 const Dashboard = () => {
     document.title = 'Dashboard'
 
-    const { authenticated } = useContext(userAuthContext)
+    const { authenticated, isLoading } = useContext(userAuthContext)
     const { workspaces, fetchAllWorkspaces, createNewWorkpace, deleteWorkspace } = useContext(workspaceServerContext)
     const [selectedShortingTab, setSelectedShortingTab] = useState('All')
     const navigate = useNavigate()
+
+
+    useEffect(()=>{
+        if(!authenticated && !isLoading){
+            navigate('/auth/login')
+        }
+    },[authenticated, isLoading])
 
     const handleDeleteWorkspace = (workSpaceId, createrId) => {
         deleteWorkspace(workSpaceId, createrId, (res, error) => {

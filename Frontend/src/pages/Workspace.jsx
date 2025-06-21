@@ -25,10 +25,6 @@ const Workspace = () => {
 
   return (
     <>
-      {/* Canvas navbar */}
-      <CanvasNavbarStore>
-        <CanvasNavbar />
-      </CanvasNavbarStore>
 
       {/* server operation context only for workspace elements */}
       <WorkspaceElementServerStore slug={slug}>
@@ -43,6 +39,10 @@ const Workspace = () => {
             {/* provide context to draw on canvas */}
             <CanvasDrowStore>
 
+              {/* Canvas navbar */}
+              <CanvasNavbarStore>
+                <CanvasNavbar />
+              </CanvasNavbarStore>
               {/* Canvas */}
               <Canvas slug={slug} />
 

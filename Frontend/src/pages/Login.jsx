@@ -29,7 +29,7 @@ const Login = () => {
 
     useEffect(() => {
         if (authenticated) {
-            navigate('/')
+            navigate('/dashboard')
         }
     }, [authenticated])
 
