@@ -1,6 +1,7 @@
 import express from 'express'
 import 'dotenv/config'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import mongoose from 'mongoose'
 import userAuth from './src/routes/userAuth.js'
 import workspace from './src/routes/workspace.js'
