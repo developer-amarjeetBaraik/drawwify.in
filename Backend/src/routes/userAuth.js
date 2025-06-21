@@ -12,7 +12,6 @@ import { setAuthCookie } from '../utils/setAuthCookie.js'
 const router = express.Router()
 
 const isProduction = process.env.NODE_ENV === 'production'
-const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000 * 15);
 
 router.get('/validate-me', authenticate, (req, res) => {
     res.status(200).send({ message: 'Authenticated', user: req.user })
@@ -58,10 +57,15 @@ router.get('/google/callback', async (req, res) => {
 
                 // save new user in database
                 await newUser.save()
+                const token = await genAuthToken({
+                    user_id,
+                    first_name: userInfo.data.given_name,
+                    email: userInfo.data.email,
+                    picture: userInfo.data.picture,
+                    projects: [],
+                })
 
-                const token = await genAuthToken(userInfo.data)
-
-                setAuthCookie(res,token)
+                setAuthCookie(res, token)
                 res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
             } catch (error) {
                 console.log(error)
@@ -69,15 +73,15 @@ router.get('/google/callback', async (req, res) => {
                 res.send({ message: 'Internal server error' })
             }
         } else if (alreadyRagistered.email === userInfo.data.email) {
-
             const token = await genAuthToken({
-                id: alreadyRagistered.user_id,
+                user_id: alreadyRagistered.user_id,
                 first_name: userInfo.data.given_name,
                 email: userInfo.data.email,
                 picture: userInfo.data.picture,
+                projects:alreadyRagistered.projects
             })
 
-            setAuthCookie(res,token)
+            setAuthCookie(res, token)
             res.redirect(`${process.env.FRONTEND_URL}/dashboard`)
         }
 
@@ -97,7 +101,7 @@ router.post('/signup-via-email', async (req, res) => {
     if (isCreated) {
         const token = await genAuthToken(isCreated)
         res.status(200)
-        setAuthCookie(res,token)
+        setAuthCookie(res, token)
         res.json({ message: 'Signup Successfully', redirect: '/dashboard', user: { id: isCreated.user_id, email: isCreated.email, first_name: isCreated.name } })
     } else {
         res.status(401).json({ message: 'User already exsist or Someing went wrong' })
@@ -110,7 +114,7 @@ router.post('/login-via-email', async (req, res) => {
     if (isAuthenticUser) {
         const token = await genAuthToken(isAuthenticUser)
         res.status(200)
-        setAuthCookie(res,token)
+        setAuthCookie(res, token)
         res.json({ message: 'Login Successfully', redirect: '/dashboard', user: { id: isAuthenticUser.user_id, email: isAuthenticUser.email, first_name: isAuthenticUser.name } })
     } else if (isAuthenticUser === null) {
         res.status(404).json({ message: 'User not found. Signup first.' })

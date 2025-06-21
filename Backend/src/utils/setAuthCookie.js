@@ -16,5 +16,4 @@ export const setAuthCookie = (res, token) => {
         domain: isProduction ? ".drawwify.in" : undefined,
         expires: tokenExpiry
     });
-    console.log('cookie sent')
 }
