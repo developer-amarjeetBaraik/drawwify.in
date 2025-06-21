@@ -7,7 +7,7 @@ import authenticate from '../middlewares/authenticate.js'
 import user from '../models/user.js'
 import { loginViaEmail, signupViaEmail } from '../controllers/userAuthController.js'
 import { genAuthToken } from '../services/genAuthToken.js'
-import setAuthCookie from '../middlewares/setAuthCookie.js'
+import { setAuthCookie } from '../middlewares/setAuthCookie.js'
 
 const router = express.Router()
 
@@ -60,9 +60,10 @@ router.get('/google/callback', async (req, res) => {
 
                 const token = await genAuthToken(userInfo.data)
 
-                setAuthCookie(token)
+                setAuthCookie(token)(req, res, () => {
+                    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+                })
 
-                res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
             } catch (error) {
                 console.log(error)
                 res.status(500)
@@ -96,8 +97,9 @@ router.post('/signup-via-email', async (req, res) => {
     if (isCreated) {
         const token = await genAuthToken(isCreated)
         res.status(200)
-        setAuthCookie(token)
-        res.json({ message: 'Signup Successfully', redirect: '/dashboard', user: { id: isCreated.user_id, email: isCreated.email, first_name: isCreated.name } })
+        setAuthCookie(token)(req, res, () => {
+            res.json({ message: 'Signup Successfully', redirect: '/dashboard', user: { id: isCreated.user_id, email: isCreated.email, first_name: isCreated.name } })
+        })
     } else {
         res.status(401).json({ message: 'User already exsist or Someing went wrong' })
     }
@@ -109,8 +111,9 @@ router.post('/login-via-email', async (req, res) => {
     if (isAuthenticUser) {
         const token = await genAuthToken(isAuthenticUser)
         res.status(200)
-        setAuthCookie(token)
-        res.json({ message: 'Login Successfully', redirect: '/dashboard', user: { id: isAuthenticUser.user_id, email: isAuthenticUser.email, first_name: isAuthenticUser.name } })
+        setAuthCookie(token)(req, res, ()=>{
+            res.json({ message: 'Login Successfully', redirect: '/dashboard', user: { id: isAuthenticUser.user_id, email: isAuthenticUser.email, first_name: isAuthenticUser.name } })
+        })
     } else if (isAuthenticUser === null) {
         res.status(404).json({ message: 'User not found. Signup first.' })
     } else {
