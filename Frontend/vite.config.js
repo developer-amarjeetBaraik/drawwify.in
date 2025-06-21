@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
-  const env = loadEnv(mode, path.resolve(__dirname, '../'), '');
+  const env = loadEnv(mode, path.resolve(__dirname, './'), '');
   return {
     base: '/',
     plugins: [
