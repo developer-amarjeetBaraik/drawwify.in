@@ -23,6 +23,7 @@ const UserAuthStore = ({ children }) => {
     useEffect(() => {
         fetch('/api/auth/validate-me', {
             method: 'GET',
+            credentials:'include',
             headers: {
                 "Content-Type": "application/json",
                 // Authorization: `Bearer ${authToken}`
@@ -44,13 +45,14 @@ const UserAuthStore = ({ children }) => {
 
     // login via Google
     const loginViaGoogle = () => {
-        window.location.href = 'https://api.drawwify.in/auth/google';
+        window.location.href = `${import.meta.env.BACKEND_GOOGLE_AUTH_ENDPOINT}`;
     }
 
     const signupViaEmail = async (email, password, callback) => {
         try {
             let res = await fetch('/api/auth/signup-via-email', {
                 method: 'POST',
+                credentials:"include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -77,6 +79,7 @@ const UserAuthStore = ({ children }) => {
         try {
             let res = await fetch('/api/auth/login-via-email', {
                 method: 'POST',
+                credentials:"include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -105,6 +108,7 @@ const UserAuthStore = ({ children }) => {
     const logout = () => {
         fetch('/api/auth/logout', {
             method: 'GET',
+            credentials:"include",
             headers: {
                 "Content-type": "application/json"
             }
