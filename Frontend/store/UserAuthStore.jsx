@@ -45,7 +45,7 @@ const UserAuthStore = ({ children }) => {
 
     // login via Google
     const loginViaGoogle = () => {
-        window.location.href = `${import.meta.env.BACKEND_GOOGLE_AUTH_ENDPOINT}`;
+        window.location.href = `${import.meta.env.VITE_BACKEND_GOOGLE_AUTH_ENDPOINT}`;
     }
 
     const signupViaEmail = async (email, password, callback) => {
