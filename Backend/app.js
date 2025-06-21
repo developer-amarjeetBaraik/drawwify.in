@@ -23,6 +23,7 @@ mongoose.connect(process.env.MONGODB_DATABASE_URL)
 
 app.use(cors(corsOptions))
 app.use(express.json())
+app.use(cookieParser())
 
 // routes
 app.use('/auth', userAuth)

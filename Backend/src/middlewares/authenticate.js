@@ -1,10 +1,6 @@
 import express from 'express'
-import cookieParser from 'cookie-parser'
 import jwt from 'jsonwebtoken'
 const app = express()
-
-app.use(express.json())
-app.use(cookieParser())
 
 const authenticate = app.use((req, res, next) => {
     const token = req.cookies.token

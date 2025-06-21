@@ -7,6 +7,7 @@ import authenticate from '../middlewares/authenticate.js'
 import user from '../models/user.js'
 import { loginViaEmail, signupViaEmail } from '../controllers/userAuthController.js'
 import { genAuthToken } from '../services/genAuthToken.js'
+import setAuthCookie from '../middlewares/setAuthCookie.js'
 
 const router = express.Router()
 
@@ -59,15 +60,9 @@ router.get('/google/callback', async (req, res) => {
 
                 const token = await genAuthToken(userInfo.data)
 
-                res.cookie('token', token, {
-                    httpOnly: true,
-                    secure: true, // Set true for production
-                    sameSite: 'Lax',
-                    domain: ".drawwify.in",
-                    expires: tokenExpiry
-                }).json({token:token});
+                setAuthCookie(token)
 
-                // res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+                res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
             } catch (error) {
                 console.log(error)
                 res.status(500)
@@ -82,13 +77,7 @@ router.get('/google/callback', async (req, res) => {
                 picture: userInfo.data.picture,
             })
 
-            res.cookie('token', token, {
-                httpOnly: true,
-                secure: true, // Set true for production
-                sameSite: 'Lax',
-                domain: ".drawwify.in",
-                expires: tokenExpiry
-            })
+            setAuthCookie(token)
             res.redirect(`${process.env.FRONTEND_URL}/dashboard`)
         }
 
@@ -106,13 +95,9 @@ router.post('/signup-via-email', async (req, res) => {
 
     if (isCreated) {
         const token = await genAuthToken(isCreated)
-        res.status(200).cookie('token', token, {
-            httpOnly: true,
-            secure: true, // Set true for production
-            sameSite: 'Lax',
-            domain: ".drawwify.in",
-            expires: tokenExpiry
-        }).json({ message: 'Signup Successfully', redirect: '/dashboard', user: { id: isCreated.user_id, email: isCreated.email, first_name: isCreated.name } })
+        res.status(200)
+        setAuthCookie(token)
+        res.json({ message: 'Signup Successfully', redirect: '/dashboard', user: { id: isCreated.user_id, email: isCreated.email, first_name: isCreated.name } })
     } else {
         res.status(401).json({ message: 'User already exsist or Someing went wrong' })
     }
@@ -123,13 +108,9 @@ router.post('/login-via-email', async (req, res) => {
     const isAuthenticUser = await loginViaEmail(email, password)
     if (isAuthenticUser) {
         const token = await genAuthToken(isAuthenticUser)
-        res.status(200).cookie('token', token, {
-            httpOnly: true,
-            secure: true, // Set true for production
-            sameSite: 'Lax',
-            domain: ".drawwify.in",
-            expires: tokenExpiry
-        }).json({ message: 'Login Successfully', redirect: '/dashboard', user: { id: isAuthenticUser.user_id, email: isAuthenticUser.email, first_name: isAuthenticUser.name } })
+        res.status(200)
+        setAuthCookie(token)
+        res.json({ message: 'Login Successfully', redirect: '/dashboard', user: { id: isAuthenticUser.user_id, email: isAuthenticUser.email, first_name: isAuthenticUser.name } })
     } else if (isAuthenticUser === null) {
         res.status(404).json({ message: 'User not found. Signup first.' })
     } else {
@@ -138,8 +119,13 @@ router.post('/login-via-email', async (req, res) => {
 })
 
 router.get('/logout', (req, res) => {
-    console.log('res get to logout')
-    res.clearCookie('token')
+    res.clearCookie('token', {
+        path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Set true for production
+        sameSite: 'none',
+        domain: ".drawwify.in",
+    })
     res.redirect(`${process.env.FRONTEND_URL}/`)
 })
 
