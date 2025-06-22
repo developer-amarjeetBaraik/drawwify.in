@@ -128,7 +128,8 @@ git push origin feature-name
 
 ## 📄 License
 
-This project is licensed under the [MIT License](./LICENSE).
+This project is licensed under the [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat)](./LICENSE).
+
 
 ---
 
