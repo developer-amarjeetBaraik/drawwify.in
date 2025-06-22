@@ -19,6 +19,7 @@ debug.log*
 .env
 *.env
 *.env.*
+!.env.sample
 
 # System files
 .DS_Store
