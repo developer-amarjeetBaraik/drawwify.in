@@ -39,3 +39,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - 🔄 Real-time multi-user collaboration
 - 🧠 AI assistant for drawing suggestions
 - 💾 Version history for workspaces
+
+---
+
+## [v1.0.1] - 03-07-2025
+
+### Add
+- Backend hosted on vercel
+- Frontend - drawwify.in
+- Backend - api.drawwify.in
+### ✨ Fix
+- Problem resolve of toolbar color feature
+
