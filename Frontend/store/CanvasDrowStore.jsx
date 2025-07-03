@@ -8,7 +8,8 @@ import useStoreAndManageElementsInArray from '../src/services/customHooks/useSto
 import useDrawMainElementsItem from '../src/services/customHooks/useDrawMainElementsItem';
 import useDrawSelectedElementsItem from '../src/services/customHooks/useDrawSelectedElementsItem';
 import updateSelectionPolygonOfLineAndArrow from '../src/services/helperFunctions/updateSelectionPolygonOfLineAndArrow';
-import checkAndUpdateElementProperty from '../src/services/helperFunctions/checkAndUpdateElementProperty';
+import checkAndUpdateElementPropertyOnServer from '../src/services/helperFunctions/checkAndUpdateElementPropertyOnServer';
+import changeProperties from '../src/services/helperFunctions/changeProperties';
 
 export const drawCanvasContext = createContext({
   mainElements: [],
@@ -94,8 +95,11 @@ const CanvasDrowStore = ({ children }) => {
   // custom hook- when new element getting add on canvas it semulates the add new element by drawing that element on canvas
   const { drawNewItem } = useDrawNewItem({ topCanvasRef, addNewItemInArr, currPastelColorRef, currBoldColorRef, currOutlineColorRef, currFontSizeRef, currFontStyleRef, currArrowHeadDirRef, drawRectangle, drawCircle, drawArrow, drawLine, pencilDraw, drawText, setIsTextEditing })
 
+  // change the properties in selected elements array
+  // changeProperties(selectedElements)
+
   // check if the user change the properties of the element and update it on server
-  checkAndUpdateElementProperty({ selectedElements, isElementEditing })
+  checkAndUpdateElementPropertyOnServer({ selectedElements, isElementEditing })
 
   // referance use to define which function should be used from useDrawElementsFunctions hook
   const functionReferance = {
@@ -114,7 +118,7 @@ const CanvasDrowStore = ({ children }) => {
 
   return (
     <>
-      <drawCanvasContext.Provider value={{ mainElements, setMainElements, selectedElements, setSelectedElements, isElementEditing, setIsElementEditing, topCanvasRef, middleCanvasRef, bottomCanvasRef, isTextEditing, storeItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints }}>
+      <drawCanvasContext.Provider value={{ mainElements, setMainElements, selectedElements, setSelectedElements, isElementEditing, setIsElementEditing, topCanvasRef, middleCanvasRef, bottomCanvasRef, isTextEditing, storeItemFromSelectedElementsToMainElements, drawSelectionArea, drawSelectedElementIndicator, drawNewItem, addNewItemInArr, drawMainElementsArr, drawSelectedElementsArr, tLRef, tRRef, bRRef, bLRef, lStart, lEnd, resetAllResizingPoints, }}>
         {children}
       </drawCanvasContext.Provider>
     </>

@@ -11,14 +11,14 @@ export const useDrawNewItem = ({ topCanvasRef, addNewItemInArr, currPastelColorR
             const ctx = canvas.getContext('2d')
             if (selectedItem === 'squareDraw') {
 
-                drawRectangle({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, x: startX, y: startY, height: endY - startY, width: endX - startX, strokeColor: currOutlineColorRef.current, borderRadius: 10, fillColor: currPastelColorRef.current || currBoldColorRef.current })
+                drawRectangle({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, x: startX, y: startY, height: endY - startY, width: endX - startX, strokeColor: currOutlineColorRef.current, borderRadius: 10, color: currPastelColorRef.current || currBoldColorRef.current })
 
             } else if (selectedItem === 'circleDraw') {
                 let centerX = (startX + endX) / 2
                 let centerY = (startY + endY) / 2
                 let radius = Math.sqrt(Math.pow(startX - centerX, 2) + Math.pow(startY - centerY, 2))
 
-                drawCircle({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, x: centerX, y: centerY, radius: radius, fillColor: currPastelColorRef.current || currBoldColorRef.current, strokeColor: currOutlineColorRef.current })
+                drawCircle({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, x: centerX, y: centerY, radius: radius, color: currPastelColorRef.current || currBoldColorRef.current, strokeColor: currOutlineColorRef.current })
             } else if (selectedItem === 'arrowDraw') {
 
                 drawArrow({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, startX, startY, endX, endY, arrowSize: 10, arrowHeadDir: currArrowHeadDirRef.current, strokeColor: currOutlineColorRef.current })
@@ -27,7 +27,7 @@ export const useDrawNewItem = ({ topCanvasRef, addNewItemInArr, currPastelColorR
                 drawLine({ isSelectedItem: true, isNewElement: true, canvasRef: topCanvasRef, startX, startY, endX, endY, strokeColor: currOutlineColorRef.current })
             } else if (selectedItem === 'pencilDraw') {
 
-                pencilDraw({ isNewElement: true, canvasRef: topCanvasRef, prevPencilX, prevPencilY, endX, endY, lineWidth: 3, pencilSize: 10, fillColor: currPastelColorRef.current || currBoldColorRef.current, strokeColor: currOutlineColorRef.current })
+                pencilDraw({ isNewElement: true, canvasRef: topCanvasRef, prevPencilX, prevPencilY, endX, endY, lineWidth: 3, pencilSize: 10, color: currPastelColorRef.current || currBoldColorRef.current, strokeColor: currOutlineColorRef.current })
             } else if (selectedItem === 'textDraw') {
 
                 // there are two ways of adding text in canvas 1 press Enter after enter text 2 click on canvas outside the text box

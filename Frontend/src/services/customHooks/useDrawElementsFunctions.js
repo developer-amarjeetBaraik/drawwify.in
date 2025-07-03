@@ -19,7 +19,7 @@ export const useDrawElementsFunction = ({ topCanvasRef, tLRef, tRRef, bLRef, bRR
         const rectWidth = newMouseX - startPointX
         const rectHeight = newMouseY - startPointY
 
-        drawRectangle({ isNewElement: true, canvasRef: topCanvasRef, x: startPointX, y: startPointY, width: rectWidth, height: rectHeight, strokeColor: getComputedStyle(document.documentElement).getPropertyValue('--select-area-border-color'), fillColor: getComputedStyle(document.documentElement).getPropertyValue('--select-area-fill-color'), strokeWidth: 0.5 })
+        drawRectangle({ isNewElement: true, canvasRef: topCanvasRef, x: startPointX, y: startPointY, width: rectWidth, height: rectHeight, strokeColor: getComputedStyle(document.documentElement).getPropertyValue('--select-area-border-color'), color: getComputedStyle(document.documentElement).getPropertyValue('--select-area-fill-color'), strokeWidth: 0.5 })
     }
     // Fn - draw selection boundry
     const drawSelectionBoundary = ({ type, sX, sY, sWidth, sHeight, startX, startY, endX, endY }) => {
@@ -106,7 +106,7 @@ export const useDrawElementsFunction = ({ topCanvasRef, tLRef, tRRef, bLRef, bRR
     }
 
     // Fn - draw rectangle
-    const drawRectangle = ({ isSelectedItem = false, isNewElement = false, canvasRef, x, y, width, height, strokeColor, fillColor = 'transparent', strokeWidth = 1.5, borderRadius = 0, }) => {
+    const drawRectangle = ({ isSelectedItem = false, isNewElement = false, canvasRef, x, y, width, height, strokeColor, color = 'transparent', strokeWidth = 1.5, borderRadius = 0, }) => {
         const ctx = canvasRef.current.getContext('2d')
         ctx.save();
 
@@ -126,7 +126,7 @@ export const useDrawElementsFunction = ({ topCanvasRef, tLRef, tRRef, bLRef, bRR
 
         ctx.beginPath()
 
-        ctx.fillStyle = fillColor === null ? 'transparent' : fillColor
+        ctx.fillStyle = color === null ? 'transparent' : color
         ctx.strokeStyle = strokeColor
         ctx.lineWidth = strokeWidth
 
@@ -137,7 +137,7 @@ export const useDrawElementsFunction = ({ topCanvasRef, tLRef, tRRef, bLRef, bRR
             ctx.fillRect(x, y, width, height);
         }
 
-        if (fillColor != 'transparent') {
+        if (color != 'transparent') {
             ctx.fill()
         }
 
@@ -145,7 +145,7 @@ export const useDrawElementsFunction = ({ topCanvasRef, tLRef, tRRef, bLRef, bRR
     }
 
     // Fn- Draw circle
-    const drawCircle = ({ isSelectedItem = false, isNewElement = false, canvasRef, x, y, radius, strokeColor = 'gray', fillColor, strokeWidth = 1.5 }) => {
+    const drawCircle = ({ isSelectedItem = false, isNewElement = false, canvasRef, x, y, radius, strokeColor = 'gray', color, strokeWidth = 1.5 }) => {
         const ctx = canvasRef.current.getContext('2d')
         if (isNewElement) {
             ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
@@ -159,12 +159,12 @@ export const useDrawElementsFunction = ({ topCanvasRef, tLRef, tRRef, bLRef, bRR
             drawSelectionBoundary({ type: 'circle', sX, sY, sWidth, sHeight })
         }
 
-        ctx.fillStyle = fillColor === null || fillColor === undefined ? 'transparent' : fillColor
+        ctx.fillStyle = color === null || color === undefined ? 'transparent' : color
         ctx.strokeStyle = strokeColor
         ctx.strokeWidth = strokeWidth
         ctx.beginPath()
         ctx.arc(x, y, radius, 0, 2 * Math.PI)
-        if (fillColor != 'transparent') {
+        if (color != 'transparent') {
             ctx.fill()
         }
         ctx.stroke()
@@ -242,10 +242,10 @@ export const useDrawElementsFunction = ({ topCanvasRef, tLRef, tRRef, bLRef, bRR
     }
 
     // Fn- Draw text
-    const drawText = ({ isSelectedItem = false, isNewElement = false, canvasRef, text = null, screenX, screenY, textColor = 'white', fontSize = 20, fontStyle = 'Arial' }) => {
+    const drawText = ({ isSelectedItem = false, isNewElement = false, canvasRef, text = null, screenX, screenY, color = 'white', fontSize = 20, fontStyle = 'Arial' }) => {
         const ctx = canvasRef.current.getContext('2d')
         if (text) {
-            ctx.fillStyle = textColor
+            ctx.fillStyle = color
             ctx.font = `${fontSize}px ${fontStyle}`
             ctx.fillText(text, screenX, screenY)
         } else {
