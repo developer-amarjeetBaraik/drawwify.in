@@ -29,6 +29,119 @@
   --color-surface: #1e293b;
   --color-glass: rgba(255, 255, 255, 0.1);
   --color-glassBorder: rgba(255, 255, 255, 0.2);
+
+}
+
+/* classes for color shades btns */
+@layer utilities {
+  .bg-tool-first-solid {
+    background-color : rgb(23, 23, 23)
+  }
+
+  .bg-tool-second-solid {
+    background-color : rgb(188, 191, 26)
+  }
+
+  .bg-tool-third-solid {
+    background-color : rgb(100, 212, 131)
+  }
+
+  .bg-tool-fourth-solid {
+    background-color : rgb(64, 126, 221)
+  }
+
+  .bg-tool-fifth-solid {
+    background-color : rgb(192, 58, 203)
+  }
+
+  .bg-tool-sixth-solid {
+    background-color : rgb(206, 82, 74)
+  }
+
+  .bg-tool-seventh-solid {
+    background-color : rgb(222, 159, 64)
+  }
+
+  .bg-tool-eighth-solid {
+    background-color : rgb(200, 102, 37)
+  }
+
+  .bg-tool-ninth-solid {
+    background-color : rgb(228, 228, 228)
+  }
+  
+  .bg-tool-first-transparent {
+    background-color : rgb(23, 23, 23)
+  }
+
+  .bg-tool-second-transparent {
+    background-color : rgb(89, 91, 39)
+  }
+
+  .bg-tool-third-transparent {
+    background-color : rgb(42, 93, 51)
+  }
+
+  .bg-tool-fourth-transparent {
+    background-color : rgb(33, 56, 91)
+  }
+
+  .bg-tool-fifth-transparent {
+    background-color : rgb(92, 41, 96)
+  }
+
+  .bg-tool-sixth-transparent {
+    background-color : rgb(99, 41, 36)
+  }
+
+  .bg-tool-seventh-transparent {
+    background-color : rgb(95, 60, 37)
+  }
+  
+  .bg-tool-eighth-transparent {
+    background-color : rgb(67, 67, 67)
+  }
+  
+  .bg-tool-ninth-transparent {
+    background-color : rgb(228, 228, 228)
+  }
+
+
+  .border-tool-first-solid {
+    border-color: rgb(219, 60, 124)
+  }
+
+  .border-tool-second-solid {
+    border-color: rgb(188, 191, 26)
+  }
+
+  .border-tool-third-solid {
+    border-color: rgb(100, 212, 131)
+  }
+
+  .border-tool-fourth-solid {
+    border-color: rgb(64, 126, 221)
+  }
+
+  .border-tool-fifth-solid {
+    border-color: rgb(192, 58, 203)
+  }
+
+  .border-tool-sixth-solid {
+    border-color: rgb(206, 82, 74)
+  }
+
+  .border-tool-seventh-solid {
+    border-color: rgb(222, 159, 64)
+  }
+
+  .border-tool-eighth-solid {
+    border-color: rgb(200, 102, 37)
+  }
+
+  .border-tool-ninth-solid {
+    border-color: rgb(228, 228, 228)
+  }
 }
 
 * {
@@ -59,28 +172,6 @@
   --tool-btn-hover-background-color: #3a3a3aa7;
   --tool-window-position-bottom: 130%;
   --tool-window-position-left: -30px;
-
-  --color-tool-first-transparent: rgb(23, 23, 23);
-  --color-tool-second-transparent: rgb(89, 91, 39);
-  --color-tool-third-transparent: rgb(42, 93, 51);
-  --color-tool-fourth-transparent: rgb(33, 56, 91);
-  --color-tool-fifth-transparent: rgb(92, 41, 96);
-  --color-tool-sixth-transparent: rgb(99, 41, 36);
-  --color-tool-seventh-transparent: rgb(95, 60, 37);
-  --color-tool-eighth-transparent: rgb(67, 67, 67);
-  --color-tool-ninth-transparent: rgb(228, 228, 228);
-
-  --first-outline-color: rgb(219, 60, 124);
-
-  --color-tool-first-solid: rgb(23, 23, 23);
-  --color-tool-second-solid: rgb(188, 191, 26);
-  --color-tool-third-solid: rgb(100, 212, 131);
-  --color-tool-fourth-solid: rgb(64, 126, 221);
-  --color-tool-fifth-solid: rgb(192, 58, 203);
-  --color-tool-sixth-solid: rgb(206, 82, 74);
-  --color-tool-seventh-solid: rgb(222, 159, 64);
-  --color-tool-eighth-solid: rgb(200, 102, 37);
-  --color-tool-ninth-solid: rgb(228, 228, 228);
 
   --cursor-default-arrow-icon: url('data:image/svg+xml;base64,CiAgPHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIGZpbHRlcj0idXJsKCNmaWx0ZXIwX2RfMTE2OF81MDQ1MSkiPgogICAgICA8cGF0aCBkPSJNOCA1TDIyIDE4SDEzLjVMOCAyNVY1WiIgZmlsbD0iYmxhY2siLz4KICAgICAgPHBhdGggZD0iTTguNSAyMy41NTQzVjYuMTQ2NjFMMjAuNzI2NyAxNy41SDEzLjVIMTMuMjU3TDEzLjEwNjggMTcuNjkxMUw4LjUgMjMuNTU0M1oiIHN0cm9rZT0id2hpdGUiLz4KICAgIDwvZz4KICAgIDxkZWZzPgogICAgICA8ZmlsdGVyIGlkPSJmaWx0ZXIwX2RfMTE2OF81MDQ1MSIgeD0iNiIgeT0iNCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjI0IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CiAgICAgICAgPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KICAgICAgICA8ZmVDb2xvck1hdHJpeCBpbj0iU291cmNlQWxwaGEiIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAxMjcgMCIgcmVzdWx0PSJoYXJkQWxwaGEiLz4KICAgICAgICA8ZmVPZmZzZXQgZHk9IjEiLz4KICAgICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxIi8+CiAgICAgICAgPGZlQ29tcG9zaXRlIGluMj0iaGFyZEFscGhhIiBvcGVyYXRvcj0ib3V0Ii8+CiAgICAgICAgPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuNCAwIi8+CiAgICAgICAgPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJlZmZlY3QxX2Ryb3BTaGFkb3dfMTE2OF81MDQ1MSIvPgogICAgICAgIDxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzExNjhfNTA0NTEiIHJlc3VsdD0ic2hhcGUiLz4KICAgICAgPC9maWx0ZXI+CiAgICA8L2RlZnM+CiAgPC9zdmc+Cg==') 8 5, auto;
 

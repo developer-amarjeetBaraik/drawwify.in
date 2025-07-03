@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { workspaceElementServerContext } from '../../../store/WorkspaceElementServerStore'
 
-const checkAndUpdateElementProperty = ({ selectedElements, isElementEditing }) => {
+const checkAndUpdateElementPropertyOnServer = ({ selectedElements, isElementEditing }) => {
 
     const { updateEditedElementOnServer } = useContext(workspaceElementServerContext)
 
@@ -17,4 +17,4 @@ const checkAndUpdateElementProperty = ({ selectedElements, isElementEditing }) =
 
 }
 
-export default checkAndUpdateElementProperty
+export default checkAndUpdateElementPropertyOnServer

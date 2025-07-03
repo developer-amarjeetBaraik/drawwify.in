@@ -29,18 +29,18 @@ const useStoreAndManageElementsInArray = ({ bottomCanvasRef,sidebarSelectedBtn, 
 
     // parse the values and store send them to store in selcted elements array
     const addNewItemInArr = ({ selectedItem, type, text, textColor, fontSize, fontStyle, screenX, screenY, startX, startY, endX, endY, prevPencilX, prevPencilY }) => {
-        let fillColor = currPastelColorRef.current || currBoldColorRef.current
+        let color = currPastelColorRef.current || currBoldColorRef.current
         let strokeColor = currOutlineColorRef.current
         let isDashed = currDashLineRef.current
         let arrowHeadDir = currArrowHeadDirRef.current
 
         if (type === 'rectangle') {
-            addItemInSelectedElementsArray({ elementType: type, x: startX, y: startY, height: endY - startY, width: endX - startX, strokeColor, borderRadius: 10, fillColor })
+            addItemInSelectedElementsArray({ elementType: type, x: startX, y: startY, height: endY - startY, width: endX - startX, strokeColor, borderRadius: 10, color })
 
         } else if (type === 'circle') {
             let centerX = (startX + endX) / 2
             let centerY = (startY + endY) / 2
-            addItemInSelectedElementsArray({ elementType: type, x: centerX, y: centerY, radius: Math.sqrt(Math.pow(startX - centerX, 2) + Math.pow(startY - centerY, 2)), fillColor, strokeColor })
+            addItemInSelectedElementsArray({ elementType: type, x: centerX, y: centerY, radius: Math.sqrt(Math.pow(startX - centerX, 2) + Math.pow(startY - centerY, 2)), color, strokeColor })
         }
         else if (type === 'arrow') {
             let tolerance = 10
@@ -78,10 +78,10 @@ const useStoreAndManageElementsInArray = ({ bottomCanvasRef,sidebarSelectedBtn, 
             addItemInSelectedElementsArray({ polygon: [p1, p2, p3, p4], elementType: type, startX, startY, endX, endY, strokeColor })
         }
         else if (type === 'pencil') {
-            addItemInSelectedElementsArray({ elementType: type, prevPencilX, prevPencilY, endX, endY, lineWidth: 3, pencilSize: 10, fillColor, strokeColor })
+            addItemInSelectedElementsArray({ elementType: type, prevPencilX, prevPencilY, endX, endY, lineWidth: 3, pencilSize: 10, color, strokeColor })
         }
         else if (type === 'text') {
-            fillColor !== null ? fillColor : fillColor = 'white'
+            color !== null ? color : color = 'white'
             addItemInSelectedElementsArray({ elementType: type, text, screenX, screenY, textColor, fontSize, fontStyle })
         }
 
